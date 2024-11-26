@@ -11,6 +11,7 @@ out, err = process.communicate()
 ouput = out.decode('utf-8')
 
 data = json.loads(ouput)
+print(f"The whole data is {data} \n\n\n")
 ips = data['vm_ip']['value']
 names = data['vm_name']['value']
 print(f"The ips are {ips} and the vms domain names are  {names} \n\n\n")
