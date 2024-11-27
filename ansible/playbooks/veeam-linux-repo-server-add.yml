@@ -1,7 +1,5 @@
-- name: Add a Veeam Backup Repository
-  hosts: veeam_setup
-  vars: 
-    veeam_windows_proxy_server: 127.0.0.1
+- name: Add a Linux Server as Veeam Repository
+  hosts: veeam-server
   tasks:
     - name: Execute multiline PowerShell script
       ansible.builtin.debug:
