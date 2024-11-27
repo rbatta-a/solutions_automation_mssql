@@ -1,0 +1,22 @@
+- name: Add a Veeam Backup Repository
+  hosts: veeam_setup
+  vars: 
+    veeam_windows_proxy_server: 127.0.0.1
+  tasks:
+    - name: Execute multiline PowerShell script
+      ansible.builtin.debug:
+        msg: 
+         The Linux Repo Server is {{ hostvars.linux_repo_server.ansible_host }}
+
+    - name: Execute multiline PowerShell script
+      win_shell: |
+        # Import the Veeam PowerShell module
+        Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
+        $linsrv = Add-VBRLinux -Name {{ hostvars.linux_repo_server.ansible_host }} -SSHUser packer -SSHPassword pure123 
+        Add-VBRBackupRepository -Name "{{ hostvars.linux_repo_server.ansible_host}}"  -Server $linsrv -Type LinuxLocal -Folder "/home/"
+      args:
+        executable: powershell
+
+
+
+
