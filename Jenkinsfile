@@ -28,9 +28,6 @@ pipeline {
                 ANSIBLE_ROLES_PATH = "../../ansible/roles"
                 vm_count = "${params.count}".toInteger()
 
-                /* 
-                 * VEEAM BackUp & Recovery 
-                /* 
                 VEEAM_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup"
 	        VEEAM_WINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server" 
       	        VEEAM_LINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-repo-server"
@@ -268,9 +265,6 @@ pipeline {
         }
         if (params.Test) {
           	println "Executing Performance step"
-         	/* 
-           	* Veeam Test Cases 
-           	*/ 
           	if  (solname == 'Veeam') {
 			dir(${$VEEAM_WSDIR}) {
 		  		echo "current working directory: ${pwd()}"
