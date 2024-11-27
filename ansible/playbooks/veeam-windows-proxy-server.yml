@@ -1,9 +1,11 @@
 - name: Install Windows Veeam Proxy Server 
   hosts: veeam-server
   tasks:
-    - name: print message
+    - name: Execute multiline PowerShell script
       ansible.builtin.debug:
-        msg: "Veeam Windows Proxy Server is {{ veeam_windows_proxy_server }}"  
+        msg: 
+         The Veeam Windows Repo Proxy Server is {{ hostvars.windows_proxy_server.ansible_host }}
+
 
     - name:  Load Veeam PowerShell Snap-In 
       ansible.windows.win_powershell:
@@ -13,14 +15,14 @@
     - name: Add Credentails for Windows Veeam Proxy Server
       ansible.windows.win_powershell:
         script: |
-          Add-VBRWinServer -Name {{ veeam_windows_proxy_server }} -Password {{ ansible_password }} -User {{ ansible_user }}  -Description "Veeam Windows Proxy Server"
+          Add-VBRWinServer -Name {{ hostvars.windows_proxy_server.ansible_host }} -Password {{ ansible_password }} -User {{ ansible_user }}  -Description "Veeam Windows Proxy Server"
 
     - name: Add Windows Veeam Proxy Server
       ansible.windows.win_powershell:
         script: |
-          Add-VBRVProxy -Server {{ veeam_windows_proxy_server }}
+          Add-VBRVProxy -Server {{ hostvars.windows_proxy_server.ansible_host }}
 
     - name: Configure Windows Veeam Proxy Server
       ansible.windows.win_powershell:
         script: |
-          Add-VBRViProxy -Server {{ veeam_windows_proxy_server }}
+          Add-VBRViProxy -Server {{ hostvars.windows_proxy_server.ansible_host }}
