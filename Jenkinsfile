@@ -27,6 +27,9 @@ pipeline {
                 ANSIBLE_HOST_KEY_CHECKING = "False"
                 ANSIBLE_ROLES_PATH = "../../ansible/roles"
                 vm_count = "${params.count}".toInteger()
+		/** 
+		* Veeam backup & replication Setup 
+		*/
 
                 VEEAM_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup"
 	        VEEAM_WINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server" 
