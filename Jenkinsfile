@@ -201,7 +201,7 @@ pipeline {
             if  (solname == 'Oracle') {
                 sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/single-instance-asm.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
             }
-            if  (solname == 'veeam') {
+            if  (solname == 'Veeam') {
 		dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup") {
                   def vpath = workspace + "/" + "modules" + "/" + "veeam-setup".trim()
 		  println "vpath ------${vpath}-----"
@@ -269,6 +269,8 @@ pipeline {
         if (params.Test) {
           	println "Executing Performance step"
           	if  (solname == 'Veeam') {
+		        echo "current working directory: ${pwd()}"
+		        echo "current working directory: ${VEEAM_WSDIR}"
 			dir(${VEEAM_WSDIR}) {
 		          echo "current working directory: ${pwd()}"
                	  	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-nfs-share-backup-job.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
