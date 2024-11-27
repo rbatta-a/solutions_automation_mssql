@@ -1,0 +1,29 @@
+- name: Add NFS share mount Point  
+  hosts: veeam-server
+  vars: 
+    nfs_share_mount_point: "10.21.122.33:/test-export" 
+  tasks:
+    - name: Execute multiline PowerShell script
+      ansible.builtin.debug:
+        msg: 
+         Create and Run the NFS Share mount point {{ nfs_share_mount_point }} Backup Job
+
+    - name: Execute multiline PowerShell script
+      win_shell: |
+        # Import the Veeam PowerShell module
+        Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
+        $repository = Get-VBRBackupRepository -Name "Default Backup Repository" 
+        Add-VBRNASNFSServer -Path {{ nfs_share_mount_point }}  -CacheRepository $repository 
+
+        $server = Get-VBRUnstructuredServer -Name "{{ nfs_share_mount_point }}"
+        $object = New-VBRNASBackupJobObject -Server $server -Path "{{ nfs_share_mount_point }}"
+        $repository = Get-VBRBackupRepository -Name {{ hostvars.windows_proxy_server.ansible_host }} 
+        Add-VBRNASBackupJob -BackupObject $object -ShortTermBackupRepository $repository -Name "Backup {{ nfs_share_mount_point }} Job"
+        Get-VBRJob -Name "Backup {{ nfs_share_mount_point }} Job" | Start-VBRJob
+
+      args:
+        executable: powershell
+
+
+
+
