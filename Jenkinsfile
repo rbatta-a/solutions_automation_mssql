@@ -269,7 +269,7 @@ pipeline {
         if (params.Test) {
           	println "Executing Performance step"
           	if  (solname == 'Veeam') {
-			dir(${$VEEAM_WSDIR}) {
+			dir(${VEEAM_WSDIR}) {
 		  		echo "current working directory: ${pwd()}"
 			}
 		} 	
