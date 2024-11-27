@@ -27,6 +27,13 @@ pipeline {
                 ANSIBLE_HOST_KEY_CHECKING = "False"
                 ANSIBLE_ROLES_PATH = "../../ansible/roles"
                 vm_count = "${params.count}".toInteger()
+
+                /* 
+                 * VEEAM BackUp & Recovery 
+                /* 
+                VEEAM_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup"
+	        VEEAM_WINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server" 
+      	        VEEAM_LINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-repo-server"
             }
             steps {
                 
@@ -260,8 +267,16 @@ pipeline {
 			
         }
         if (params.Test) {
-			println "Executing Performance step"
-	                     sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/does_tool_loadgen.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
+          	println "Executing Performance step"
+         	/* 
+           	* Veeam Test Cases 
+           	*/ 
+          	if  (solname == 'Veeam') {
+			dir(${$VEEAM_WSDIR}) {
+		  		echo "current working directory: ${pwd()}"
+			}
+		} 	
+	        sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/does_tool_loadgen.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
            // sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-test.yml --private-key "  + '${SSH_KEY}' + " --user ansible"
         }
 
