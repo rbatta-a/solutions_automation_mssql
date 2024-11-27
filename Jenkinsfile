@@ -207,10 +207,10 @@ pipeline {
 		 // Window Repo Server
                	  sh script: "echo [veeam-windows-repo-server] >> inventory.ini"
                	  sh script: 'echo -n "windows_repo_server ansible_host=`head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server/hosts.ini`" >> inventory.ini'
-                  sh script: "cat hosts.ini >> inventory.ini"
+                  sh script: "cat inventory.ini"
 
 
-                  sh script: "cat ../veeam-windows-repo-server/hosts.ini >> inventory.ini"
+                  //sh script: "cat ../veeam-windows-repo-server/hosts.ini >> inventory.ini"
 
                	 // sh script: "echo [veeam-win-proxy-server] >> inventory.ini"
                  // sh script: "cat ../veeam-windows-repo-server/hosts.ini >> inventory.ini"
