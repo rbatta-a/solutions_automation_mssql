@@ -1,5 +1,5 @@
 - name: Add a Veeam Backup Repository
-  hosts: veeam_setup
+  hosts: veeam-server
   tasks:
     - name: Execute multiline PowerShell script
       ansible.builtin.debug:
