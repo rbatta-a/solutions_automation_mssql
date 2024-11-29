@@ -85,7 +85,7 @@ pipeline {
             	  total_count = vm_count.toInteger() + count.toInteger()
             	  println total_count
 		  sh script: "$tf_cmd apply -auto-approve -var-file=$vpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
-            	  sh script: "python3.9 ../../build-inventory.py " + "veeam-setup"
+            	  sh script: "python3.9 ../../build-inventory.py " + "veeam-server"
             	  sh script: "cat hosts.ini"
                 }
 
@@ -110,7 +110,7 @@ pipeline {
             	  total_count = vm_count.toInteger() + count.toInteger()
             	  println total_count
 		  sh script: "$tf_cmd apply -auto-approve -var-file=$vwpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
-            	  sh script: "python3 ../../build-inventory.py " + "veeam-windows-backupproxy-server"
+            	  sh script: "python3 ../../build-inventory.py " + "veeam-windows-servers"
             	  sh script: "cat hosts.ini"
 	       }
 
@@ -135,7 +135,7 @@ pipeline {
             	  total_count = vm_count.toInteger() + count.toInteger()
             	  println total_count
 		  sh script: "$tf_cmd apply -auto-approve -var-file=$vlpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
-            	  sh script: "python3.6 ../../build-inventory.py " + "veeam-linux-backupproxy-server"
+            	  sh script: "python3.6 ../../build-inventory.py " + "veeam-linux-servers"
             	  sh script: "cat hosts.ini"
 	      }
              } else {
@@ -250,17 +250,41 @@ pipeline {
         }
 
         if (params.Destroy) {
-	      if (solname == 'veeam') {
-		dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup") {
+	      if (solname == 'Veeam') {
+		dir("${VEEAM_SERV_WSDIR}") {
                   println  "Destroying Veeam Setup"
-                  def vpath = workspace + "/" + "modules" + "/" + "veeam-setup".trim()
+                  def vpath = workspace + "/" + "modules" + "/" + "veeam-server".trim()
 		  echo "current working directory: ${pwd()}"
 		  println "vpath ------${vpath}-----"
 	 	  println "Updating backend file"
-            	  sh script: "sed -i -e 's/sol_name/"+"veem-setup"+"/g' backend.tf"
+            	  sh script: "sed -i -e 's/sol_name/"+"veem-server"+"/g' backend.tf"
                   sh script: "${tf_cmd} init -reconfigure"
 	          sh script: "${tf_cmd} destroy -auto-approve -var-file=$vpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	+ " -var ansible_key=" + '${SSH_KEY}'	 +	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'	 +	" -var vm_count=" + '${vm_count}'	
                }
+
+               	dir("${VEEAM_WINSERVS_WSDIR}") {
+                  println  "Destroying Veeam Windows Servers"
+                  def vpath = workspace + "/" + "modules" + "/" + "veeam-windows-servers".trim()
+		  echo "current working directory: ${pwd()}"
+		  println "vpath ------${vpath}-----"
+	 	  println "Updating backend file"
+            	  sh script: "sed -i -e 's/sol_name/"+"veeam-windows-servers"+"/g' backend.tf"
+                  sh script: "${tf_cmd} init -reconfigure"
+	          sh script: "${tf_cmd} destroy -auto-approve -var-file=$vpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	+ " -var ansible_key=" + '${SSH_KEY}'	 +	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'	 +	" -var vm_count=" + '${vm_count}'	
+               }
+               
+               dir("${VEEAM_SERV_WSDIR}") {
+                  println  "Destroying Veeam Setup"
+                  def vpath = workspace + "/" + "modules" + "/" + "veeam-linux-servers".trim()
+		  echo "current working directory: ${pwd()}"
+		  println "vpath ------${vpath}-----"
+	 	  println "Updating backend file"
+            	  sh script: "sed -i -e 's/sol_name/"+"veem-linux-servers"+"/g' backend.tf"
+                  sh script: "${tf_cmd} init -reconfigure"
+	          sh script: "${tf_cmd} destroy -auto-approve -var-file=$vpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	+ " -var ansible_key=" + '${SSH_KEY}'	 +	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'	 +	" -var vm_count=" + '${vm_count}'	
+               }
+               
+
 
             } else {
                 println "Executing Infrstructure destroy step" 
