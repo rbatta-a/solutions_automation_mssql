@@ -27,13 +27,13 @@ pipeline {
                 ANSIBLE_HOST_KEY_CHECKING = "False"
                 ANSIBLE_ROLES_PATH = "../../ansible/roles"
                 vm_count = "${params.count}".toInteger()
+
 		/** 
 		* Veeam backup & replication Setup 
 		*/
-
-                VEEAM_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup"
-	        VEEAM_WINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server" 
-      	        VEEAM_LINSERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-repo-server"
+                VEEAM_SERV_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-server"
+	        VEEAM_WINSERVS_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-servers" 
+      	        VEEAM_LINSERVS_WSDIR = "/var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-servers"
             }
             steps {
                 
@@ -61,14 +61,20 @@ pipeline {
 
 	    if (params.Build) {
               if (solname == 'veeam') {
-/*
-		dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-setup") {
-                  println  "Setting Veeam Setup VM"
-                  def vpath = workspace + "/" + "modules" + "/" + "veeam-setup".trim()
+		/**
+		* Create the Veeams Clutser VMs
+                */
+
+		/** 
+ 		* Creating VMs for Veeam Installation
+		*/
+		dir("${VEEAM_SERV_WSDIR}") {
+                  println  "Setting Veeam Server VM"
+                  def vpath = workspace + "/" + "modules" + "/" + "veeam-server".trim()
 		  echo "current working directory: ${pwd()}"
 		  println "vpath ------${vpath}-----"
 	 	  println "Updating backend file"
-            	  sh script: "sed -i -e 's/sol_name/"+"veem-setup"+"/g' backend.tf"
+            	  sh script: "sed -i -e 's/sol_name/"+"veem-server"+"/g' backend.tf"
 		  println "Executing Infrstructure build step" 
             	  sh script: "/bin/rm -rf .terraform"
 	          print  "sh script: ${tf_cmd} init -upgrade"
@@ -84,13 +90,16 @@ pipeline {
             	  sh script: "cat hosts.ini"
                }
 
-	       dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server") {
-            	  println  "Creating: Veeam - Windows BackUp Proxy Server"
-                  def vwpath = workspace + "/" + "modules" + "/" + "veeam-windows-backupproxy-server".trim()
+		/** 
+ 		* Creating Windows VMs for Veeam Proxy & Repo
+		*/
+	       dir("${VEEAM_WINSERVS_WSDIR}") {
+            	  println  "Creating: Windows Servers ..."
+                  def vwpath = workspace + "/" + "modules" + "/" + "veeam-windows-servers".trim()
 		  echo "current working directory: ${pwd()}"
 		  println "vwpath ------${vwpath}-----"
 	 	  println "Updating backend file"
-            	  sh script: "sed -i -e 's/sol_name/"+"veeam-windows-backupproxy-server"+"/g' backend.tf"
+            	  sh script: "sed -i -e 's/sol_name/"+"veeam-windows-servers"+"/g' backend.tf"
 		  println "Executing Infrstructure build step" 
             	  sh script: "/bin/rm -rf .terraform"
 	          print  "sh script: ${tf_cmd} init -upgrade"
@@ -105,14 +114,17 @@ pipeline {
             	  sh script: "python3 ../../build-inventory.py " + "veeam-windows-backupproxy-server"
             	  sh script: "cat hosts.ini"
 	       }
-*/
-      	       dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-backupproxy-server") {
-            	  println  "Creating: Veeam - Linux BackUp Proxy Server"
-                  def vlpath = workspace + "/" + "modules" + "/" + "veeam-linux-backupproxy-server".trim()
+
+		/** 
+ 		* Creating Linux VMs for Veeam Repo
+		*/
+	       dir("${VEEAM_LINSERVS_WSDIR}") {
+            	  println  "Creating: Linux Servers ..."
+                  def vlpath = workspace + "/" + "modules" + "/" + "veeam-linux-servers".trim()
         	  echo "Inside Dir: ${pwd()}"
 		  println "vlpath ------${vlpath}-----"
 	 	  println "Updating backend file"
-            	  sh script: "sed -i -e 's/sol_name/"+"veeam-linux-backupproxy-server"+"/g' backend.tf"
+            	  sh script: "sed -i -e 's/sol_name/"+"veeam-linux-servers"+"/g' backend.tf"
 		  println "Executing Infrstructure build step" 
             	  sh script: "/bin/rm -rf .terraform"
 	          print  "sh script: ${tf_cmd} init -upgrade"
@@ -125,50 +137,6 @@ pipeline {
             	  println total_count
 		  sh script: "$tf_cmd apply -auto-approve -var-file=$vlpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
             	  sh script: "python3.6 ../../build-inventory.py " + "veeam-linux-backupproxy-server"
-            	  sh script: "cat hosts.ini"
-	      }
-
-              dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-repo-server") {
-            	  println  "Creating: Veeam - Windows Repo Server"
-                  def vwpath = workspace + "/" + "modules" + "/" + "veeam-windows-repo-server".trim()
-		  echo "current working directory: ${pwd()}"
-		  println "vwpath ------${vwpath}-----"
-	 	  println "Updating backend file"
-            	  sh script: "sed -i -e 's/sol_name/"+"veeam-windows-repo-server"+"/g' backend.tf"
-		  println "Executing Infrstructure build step" 
-            	  sh script: "/bin/rm -rf .terraform"
-	          print  "sh script: ${tf_cmd} init -upgrade"
-	          sh script: "${tf_cmd} init -upgrade"
-            	  count = sh(script: "grep vm_count main.tfvars | awk  '{print \$3}' |xargs", returnStdout: true)
-            	  //count = sh(script: "cat hosts.ini|wc -l", returnStdout: true)
-           	  println count
-            	  println vm_count
-            	  total_count = vm_count.toInteger() + count.toInteger()
-            	  println total_count
-		  sh script: "$tf_cmd apply -auto-approve -var-file=$vwpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
-            	  sh script: "python3 ../../build-inventory.py " + "veeam-windows-repo-server"
-            	  sh script: "cat hosts.ini"
-	       }
-
-      	       dir("/var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-repo-server") {
-            	  println  "Creating: Veeam - Linux Linux Repo Server"
-                  def vlpath = workspace + "/" + "modules" + "/" + "veeam-linux-repo-server".trim()
-        	  echo "Inside Dir: ${pwd()}"
-		  println "vlpath ------${vlpath}-----"
-	 	  println "Updating backend file"
-            	  sh script: "sed -i -e 's/sol_name/"+"veeam-linux-repo-server"+"/g' backend.tf"
-		  println "Executing Infrstructure build step" 
-            	  sh script: "/bin/rm -rf .terraform"
-	          print  "sh script: ${tf_cmd} init -upgrade"
-	          sh script: "${tf_cmd} init -upgrade"
-            	  count = sh(script: "grep vm_count main.tfvars | awk  '{print \$3}' |xargs", returnStdout: true)
-            	  //count = sh(script: "cat hosts.ini|wc -l", returnStdout: true)
-           	  println count
-            	  println vm_count
-            	  total_count = vm_count.toInteger() + count.toInteger()
-            	  println total_count
-		  sh script: "$tf_cmd apply -auto-approve -var-file=$vlpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
-            	  sh script: "python3.6 ../../build-inventory.py " + "veeam-linux-repo-server"
             	  sh script: "cat hosts.ini"
 	      }
 
@@ -207,7 +175,7 @@ pipeline {
 	        sh script: "cd  /root/racsetup_copy/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-rac -e hostgroup=dbfs playbooks/racattackl-install.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
 	     }
             if  (solname == 'Veeam') {
-		dir("${VEEAM_WSDIR}") {
+		dir("${VEEAM_SERV_WSDIR}") {
                   def vpath = workspace + "/" + "modules" + "/" + "veeam-setup".trim()
 		  println "vpath ------${vpath}-----"
 		  println "Windows_Admin_Pass ------${WINDOWS_ADMIN_PASS}-----"
@@ -223,47 +191,27 @@ pipeline {
 
                  // Veeam Windows Proxy Server
                	  sh script: "echo [veeam-windows-proxy-server] >> inventory.ini"
-               	  sh script: 'echo -n "windows_proxy_server ansible_host=`head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server/hosts.ini | tail -n 1 `" >> inventory.ini'
+               	  sh script: 'echo -n "windows_proxy_server ansible_host=`head -n 1 ${VEEAM_WINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-windows-proxy-server.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
 
 
-
-                  // Linux Repo Server
-               	  sh script: "echo [veeam-linux-repo-server] >> inventory.ini"
-               	  sh script: 'echo -n "linux_repo_server ansible_host=`head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-linux-backupproxy-server/hosts.ini | tail -n 1 `" >> inventory.ini'
-                  sh script: "cat inventory.ini"
-               	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-linux-repo-server-add.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
-
-
-
-
 		 // Window Repo Server
                	  sh script: "echo [veeam-windows-repo-server] >> inventory.ini"
-               	  sh script: 'echo -n "windows_repo_server ansible_host=`head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server/hosts.ini | tail -n 1 `" >> inventory.ini'
+               	  sh script: 'echo -n "windows_repo_server ansible_host=`head -n 2 ${VEEAM_WINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-windows-repo-server-add.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
 
 
+                  // Linux Repo Server
+               	  sh script: "echo [veeam-linux-repo-server] >> inventory.ini"
+               	  sh script: 'echo -n "linux_repo_server ansible_host=`head -n 1 ${VEEAM_LINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
+                  sh script: "cat inventory.ini"
+               	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-linux-repo-server-add.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
+
 		  // Add NFS Share 
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-nfs-share.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
 
-
-
-
-                  //sh script: "cat ../veeam-windows-repo-server/hosts.ini >> inventory.ini"
-
-               	 // sh script: "echo [veeam-win-proxy-server] >> inventory.ini"
-                 // sh script: "cat ../veeam-windows-repo-server/hosts.ini >> inventory.ini"
-               	 // sh script: "echo [veeam-linux-proxy-server] >> inventory.ini"
-               	//  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-install.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
-                 // veeam_windows_proxy_server = sh(script: 'head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server/hosts.ini')
-           	 // println veeam_windows_proxy_server
-
-                  // veeam_windows_repo_server = sh(script: 'head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-repo-server/hosts.ini')
-
-           	  // println veeam_windows_repo_server
-              	  // sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-windows-repo-server.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true veeam_windows_repo_server=10.21.210.73'" 
               }
             }
             else {
