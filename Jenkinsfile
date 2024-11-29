@@ -60,7 +60,7 @@ pipeline {
 	dir(path) {
 
 	    if (params.Build) {
-              if (solname == 'veeam') {
+              if (solname == 'Veeam') {
 		/**
 		* Create the Veeams Clutser VMs
                 */

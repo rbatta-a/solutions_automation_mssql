@@ -17,7 +17,7 @@ vm_gateway = "10.21.210.1"
 
 #vm 
 vm_count = "3"
-vm_name = "veeam-windows-backupproxy-server"
+vm_name = "veeam-windows-server"
 network = "10.21.210.0"
 netmask = "24"
 vm_ip = ["10.21.210.22"]
