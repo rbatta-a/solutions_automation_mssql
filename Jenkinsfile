@@ -185,7 +185,7 @@ pipeline {
 		  // Install Veeam setup 
                   sh script: "cat ${VEEAM_SERV_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-server] >> inventory.ini"
-               	  sh script: 'echo -n "veea-server ansible_host=`head -n 1 ${VEEAM_SERV_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
+               	  sh script: 'echo -n "veeam-server ansible_host=`head -n 1 ${VEEAM_SERV_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
 
 		
