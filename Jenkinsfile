@@ -176,7 +176,7 @@ pipeline {
 	     }
             if  (solname == 'Veeam') {
 		dir("${VEEAM_SERV_WSDIR}") {
-                  def vpath = workspace + "/" + "modules" + "/" + "veeam-setup".trim()
+                  def vpath = workspace + "/" + "modules" + "/" + "veeam-server".trim()
 		  println "vpath ------${vpath}-----"
 		  println "Windows_Admin_Pass ------${WINDOWS_ADMIN_PASS}-----"
                   sh script: "ansible-galaxy collection install veeamhub.veeam"
