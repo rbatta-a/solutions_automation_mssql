@@ -58,8 +58,7 @@ pipeline {
 	def path = workspace + "/" + "modules" + "/" + solname
 	println "path ------${path}-----"
 	dir(path) {
-
-	    if (params.Build) {
+	if (params.Build) {
               if (solname == 'Veeam') {
 		/**
 		* Create the Veeams Clutser VMs
@@ -88,7 +87,7 @@ pipeline {
 		  sh script: "$tf_cmd apply -auto-approve -var-file=$vpath"  + "/main.tfvars" + " -var vsphere_password=" + '${VC_PASS}'	 + " -var ansible_key=" + '${SSH_KEY}'	+	 " -var infoblox_pass=" + '${INFOBLOX_PASS}'  +	" -var vm_count=" + total_count
             	  sh script: "python3.9 ../../build-inventory.py " + "veeam-setup"
             	  sh script: "cat hosts.ini"
-               }
+                }
 
 		/** 
  		* Creating Windows VMs for Veeam Proxy & Repo
@@ -139,8 +138,7 @@ pipeline {
             	  sh script: "python3.6 ../../build-inventory.py " + "veeam-linux-backupproxy-server"
             	  sh script: "cat hosts.ini"
 	      }
-
-	    } else {
+             } else {
             	println "Updating backend file"
             	sh script: "sed -i -e 's/sol_name/"+solname+"/g' backend.tf"
 			println "Executing Infrstructure build step" 
