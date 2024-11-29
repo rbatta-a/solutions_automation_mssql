@@ -177,17 +177,24 @@ pipeline {
                   def vpath = workspace + "/" + "modules" + "/" + "veeam-server".trim()
 		  println "vpath ------${vpath}-----"
 		  println "Windows_Admin_Pass ------${WINDOWS_ADMIN_PASS}-----"
+		  /**
+ 		  * Install Veeam Ansible Collection
+		  */
                   sh script: "ansible-galaxy collection install veeamhub.veeam"
-                  sh script: "cat hosts.ini"
-               	  sh script: "echo [veeam-server] > inventory.ini"
-                  sh script: "cat hosts.ini >> inventory.ini"
+
+		  // Install Veeam setup 
+                  sh script: "${VEEAM_SERV_WSDIR}/hosts.ini" 
+               	  sh script: "echo [veeam-server] >> inventory.ini"
+               	  sh script: 'echo -n "veea-server ansible_host=`head -n 1 ${VEEAM_SERV_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
+                  sh script: "cat inventory.ini"
+
 		
-		  // Install Veeam Setup
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-install.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
 
 		
 
                  // Veeam Windows Proxy Server
+                  sh script: "${VEEAM_WINSERVS_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-windows-proxy-server] >> inventory.ini"
                	  sh script: 'echo -n "windows_proxy_server ansible_host=`head -n 1 ${VEEAM_WINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
@@ -202,6 +209,7 @@ pipeline {
 
 
                   // Linux Repo Server
+                  sh script: "${VEEAM_LINSERVS_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-linux-repo-server] >> inventory.ini"
                	  sh script: 'echo -n "linux_repo_server ansible_host=`head -n 1 ${VEEAM_LINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
