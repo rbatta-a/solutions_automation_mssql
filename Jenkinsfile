@@ -183,7 +183,7 @@ pipeline {
                   sh script: "ansible-galaxy collection install veeamhub.veeam"
 
 		  // Install Veeam setup 
-                  sh script: "${VEEAM_SERV_WSDIR}/hosts.ini" 
+                  sh script: "cat ${VEEAM_SERV_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-server] >> inventory.ini"
                	  sh script: 'echo -n "veea-server ansible_host=`head -n 1 ${VEEAM_SERV_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
@@ -194,7 +194,7 @@ pipeline {
 		
 
                  // Veeam Windows Proxy Server
-                  sh script: "${VEEAM_WINSERVS_WSDIR}/hosts.ini" 
+                  sh script: "cat ${VEEAM_WINSERVS_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-windows-proxy-server] >> inventory.ini"
                	  sh script: 'echo -n "windows_proxy_server ansible_host=`head -n 1 ${VEEAM_WINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
@@ -209,7 +209,7 @@ pipeline {
 
 
                   // Linux Repo Server
-                  sh script: "${VEEAM_LINSERVS_WSDIR}/hosts.ini" 
+                  sh script: "cat ${VEEAM_LINSERVS_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-linux-repo-server] >> inventory.ini"
                	  sh script: 'echo -n "linux_repo_server ansible_host=`head -n 1 ${VEEAM_LINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
