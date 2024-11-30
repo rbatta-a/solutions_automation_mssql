@@ -233,14 +233,7 @@ pipeline {
           	if  (solname == 'Veeam') {
 			dir("${VEEAM_WSDIR}") {
 		          echo "current working directory: ${pwd()}"
-                          sh script: "cat hosts.ini"
-               	          sh script: "echo [veeam-server] > inventory.ini"
-                          sh script: "cat hosts.ini >> inventory.ini"
                           sh script: "cat inventory.ini"
-                          sh script: "echo [veeam-windows-proxy-server] >> inventory.ini"
-               	          sh script: 'echo -n "windows_proxy_server ansible_host=`head -n 1 /var/lib/jenkins/workspace/Solution-automation/modules/veeam-windows-backupproxy-server/hosts.ini | tail -n 1 `" >> inventory.ini'
-                          sh script: "cat inventory.ini"
-
                	  	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-nfs-share-backup-job.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
 			}
 		} else { 	
