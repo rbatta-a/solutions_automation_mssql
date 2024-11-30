@@ -12,12 +12,9 @@
       win_shell: |
         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
-        $repository = Get-VBRBackupRepository -Name "Default Backup Repository" 
-        Add-VBRNASNFSServer -Path {{ nfs_share_mount_point }}  -CacheRepository $repository 
-
         $server = Get-VBRUnstructuredServer -Name "{{ nfs_share_mount_point }}"
         $object = New-VBRNASBackupJobObject -Server $server -Path "{{ nfs_share_mount_point }}"
-        $repository = Get-VBRBackupRepository -Name {{ hostvars.windows_proxy_server.ansible_host }} 
+        $repository = Get-VBRBackupRepository -Name "Default Backup Repository" 
         Add-VBRNASBackupJob -BackupObject $object -ShortTermBackupRepository $repository -Name "Backup {{ nfs_share_mount_point }} Job"
         Get-VBRJob -Name "Backup {{ nfs_share_mount_point }} Job" | Start-VBRJob
 
