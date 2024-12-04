@@ -28,6 +28,7 @@ os_disk_size = "200"
 data_disk_size = "1024"
 datastore_os = "vvOLs-Metro"
 datastore_data = "vvOLs-Metro"
+datastore_data2 = "vvOLs-Metro"
 #These below are the original aspects present and we added from the MSSQLDC  the above datastaore_os and datastore_data
 #datastore_os = "Metro_Cluster1_Prod01"
 #datastore_data = "sql-sizer-data"
