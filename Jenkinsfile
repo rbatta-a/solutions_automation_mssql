@@ -181,7 +181,13 @@ pipeline {
  		  * Install Veeam Ansible Collection
 		  */
                   sh script: "ansible-galaxy collection install veeamhub.veeam"
+			
+		  // Joining FA to Domain	
+                  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-fa-domain.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'"
 
+		  // Creating FS and Exports on FA 	
+                  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-fa-nfs-export.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'"
+			
 		  // Install Veeam setup 
                   sh script: "cat ${VEEAM_SERV_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-server] > inventory.ini"
