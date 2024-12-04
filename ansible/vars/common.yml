@@ -28,3 +28,11 @@ ips:
   - 10.21.210.9
   - 10.21.210.11
 nfs_share: 10.21.220.76:/saphana
+
+veeam:  
+  domain_name: "veeam.local" # Replace with your domain name
+  dns_domain_name: "veeam.local" # Replace with your DNS domain name
+  hostname: "host1" # Replace if you need a specific hostname
+  domain_admin_user: "veeam.local\\administrator" # Replace with your domain admin username
+  domain_admin_password: "Osmium76$" # Replace with your domain admin password 
+
