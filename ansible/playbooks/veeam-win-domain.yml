@@ -1,0 +1,16 @@
+- name: Join Windows VM to Domain
+  hosts: all
+  tasks:
+    - name: Ensure the computer is joined to the domain
+      ansible.windows.win_domain_membership:
+        domain_name: "veeam.local" # Replace with your domain name
+        dns_domain_name: "veeam.local" # Replace with your DNS domain name
+        hostname: "{{ ansible_hostname }}" # Replace if you need a specific hostname
+        domain_admin_user: "veeam.local\\administrator" # Replace with your domain admin username
+        domain_admin_password: "Osmium76$" # Replace with your domain admin password (encrypted via Ansible Vault if needed)
+        state: "domain"
+      register: domain_join_result
+
+    - name: Reboot the server if required
+      ansible.windows.win_reboot:
+      when: domain_join_result.reboot_required
