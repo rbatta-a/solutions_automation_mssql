@@ -12,4 +12,4 @@
         password: "{{ veeam.domain_admin_password }}"
         fa_url: "{{ veeam.fa_url }}"
         api_token: "{{ veeam.fa_api_token }}"
-     ignore_errors: "{{ global_config.ignore_errors }}"
+      ignore_errors: true
