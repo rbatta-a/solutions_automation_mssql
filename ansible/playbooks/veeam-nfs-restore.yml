@@ -35,5 +35,6 @@
             }
         } else {
             Write-Host "Backup job not found."
+        }
       args:
         executable: powershell
