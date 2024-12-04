@@ -21,8 +21,10 @@
       ansible.windows.win_powershell:
         script: |
           Add-VBRVProxy -Server {{ hostvars.windows_proxy_server.ansible_host }}
+      ignore_errors: true
 
     - name: Configure Windows Veeam Proxy Server
       ansible.windows.win_powershell:
         script: |
           Add-VBRViProxy -Server {{ hostvars.windows_proxy_server.ansible_host }}
+      ignore_errors: true    
