@@ -1,44 +1,39 @@
 - name: Restore NFS share from Backup
   hosts: veeam-server
-  vars: 
+  vars:
     nfs_share_restore_point: "10.21.122.33:/test-export"
-    restore_path: "10.21.122.33:/test-export"  # Local path on the server where data will be restored
+    restore_path: "10.21.122.33:/test-export"
   tasks:
     - name: Debug restore operation
       ansible.builtin.debug:
-        msg: 
-         Initiate restore for NFS Share {{ nfs_share_restore_point }} to {{ restore_path }}
+        msg: Initiating restore for NFS Share {{ nfs_share_restore_point }} to {{ restore_path }}
 
     - name: Execute multiline PowerShell script for restore
       win_shell: |
-        # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
 
-        # Get the backup job
-        $backupJob = Get-VBRBackup | Where-Object { $_.Name -eq "Backup {{ nfs_share_restore_point }} Job" }
+        $backupJob = Get-VBRBackup | Where-Object { $_.Name -eq "Backup {{ nfs_share_restore_point }}" }
 
         if ($backupJob) {
-          # Get the restore point for the backup job
-          $restorePoint = Get-VBRRestorePoint -Backup $backupJob | Sort-Object CreationTime -Descending | Select-Object -First 1
+            $restorePoint = Get-VBRRestorePoint -Backup $backupJob | Sort-Object CreationTime -Descending | Select-Object -First 1
 
-          # Restore the data to the specified location
-          $restoreSession = Start-VBRNASRestore -RestorePoint $restorePoint -TargetPath "{{ restore_path }}" -RestoreMode "Copy"
+            if ($restorePoint) {
+                $restoreSession = Start-VBRNASRestore -RestorePoint $restorePoint -TargetPath "{{ restore_path }}" -RestoreMode "Copy"
 
-          # Monitor the restore session
-          while ($restoreSession.State -eq "Working") {
-              Start-Sleep -Seconds 10
-              Write-Host "Restore in progress..."
-          }
+                while ($restoreSession.State -eq "Working") {
+                    Start-Sleep -Seconds 10
+                    Write-Host "Restore in progress..."
+                }
 
-          # Check if the restore completed successfully
-          if ($restoreSession.State -eq "Success") {
-              Write-Host "Restore completed successfully."
-          } else {
-              Write-Host "Restore failed. Please check the logs for more details."
-          }
+                if ($restoreSession.State -eq "Success") {
+                    Write-Host "Restore completed successfully."
+                } else {
+                    Write-Host "Restore failed. State: $($restoreSession.State)"
+                }
+            } else {
+                Write-Host "No restore point found for the backup job."
+            }
         } else {
-          Write-Host "No backup job found for {{ nfs_share_restore_point }}."
-        }
-
+            Write-Host "Backup job not found."
       args:
         executable: powershell
