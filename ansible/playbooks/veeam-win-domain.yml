@@ -3,11 +3,11 @@
   tasks:
     - name: Ensure the computer is joined to the domain
       ansible.windows.win_domain_membership:
-        domain_name: "veeam.local" # Replace with your domain name
-        dns_domain_name: "veeam.local" # Replace with your DNS domain name
+        domain_name: "{{ domain_name }}" # Replace with your domain name
+        dns_domain_name: "{{ dns_domain_name }}" # Replace with your DNS domain name
         hostname: "{{ ansible_hostname }}" # Replace if you need a specific hostname
-        domain_admin_user: "veeam.local\\administrator" # Replace with your domain admin username
-        domain_admin_password: "Osmium76$" # Replace with your domain admin password (encrypted via Ansible Vault if needed)
+        domain_admin_user: "{{ domain_admin_user }}" # Replace with your domain admin username
+        domain_admin_password: "{{ domain_admin_password }}" # Replace with your domain admin password (encrypted via Ansible Vault if needed)
         state: "domain"
       register: domain_join_result
 
