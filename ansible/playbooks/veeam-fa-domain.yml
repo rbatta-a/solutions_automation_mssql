@@ -1,0 +1,17 @@
+- name: Flash array active directory management module
+ collections:
+ - purestorage.flasharray
+ vars_files:
+    - "../vars/common.yml"
+ gather_facts: yes
+ tasks:
+  ## Verify active directory account creation
+  - name: Create AD account
+   purefa_ad:
+    name: "{{ veeam.ad_name}}"
+    domain: "{{ veeam.domain_name }}"
+    username: "{{ veeam.ad_username }}"
+    password: "{{ veeam.domain_admin_password }}"
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+   ignore_errors: "{{ global_config.ignore_errors }}"
