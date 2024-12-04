@@ -35,4 +35,28 @@ veeam:
   hostname: "host1" # Replace if you need a specific hostname
   domain_admin_user: "veeam.local\\administrator" # Replace with your domain admin username
   domain_admin_password: "Osmium76$" # Replace with your domain admin password 
+  ad_name: veeamfile
+  ad_username: Administrator
+  fs_name: veeam-auto-new-fs1
+  eradicate: true
+  fs_dir_name: veemm-auto-fs-dir1
+  fs_dir_path: veeam-auto-fs-dir-path1
+  nfs_policy_name: veeam-auto-nfs-policy1
+  nfs_no_rule_name: ansible-qa-nfs-norule-policy1
+  nfs_access: root-squash
+  nfs_access_no_root_squash: no-root-squash
+  nfs_permission: rw
+  nfs_client: ansible-qa-nfs-client1
+  nfs_all_client: "*"
+  smb_policy_name: veeam-auto-smb-policy1
+  smb_encrypt: true
+  smb_anon_allowed: false
+  smb_client: veeam-auto-smb-client1
+  fs_export_name: veeam-auto-fs-export1
+  fs_nfs_policy: veeam-auto-nfs-policy1
+  fs_smb_policy: veeam-auto-smb-policy1
+  fa_name: sn1-c60r3-h03-32
+  fa_file_vif_ip_address: 10.21.122.33
+  fa_url: 10.21.199.50
+  fa_api_token: 86b1b214-0079-c3df-dee1-2315fdc25421
 
