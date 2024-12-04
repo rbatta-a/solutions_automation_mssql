@@ -1,13 +1,15 @@
 - name: Join Windows VM to Domain
   hosts: all
+  vars_files:
+    - "../vars/common.yml"
   tasks:
     - name: Ensure the computer is joined to the domain
       ansible.windows.win_domain_membership:
-        domain_name: "{{ domain_name }}" # Replace with your domain name
-        dns_domain_name: "{{ dns_domain_name }}" # Replace with your DNS domain name
-        hostname: "{{ ansible_hostname }}" # Replace if you need a specific hostname
-        domain_admin_user: "{{ domain_admin_user }}" # Replace with your domain admin username
-        domain_admin_password: "{{ domain_admin_password }}" # Replace with your domain admin password (encrypted via Ansible Vault if needed)
+        domain_name: "{{ veeam.domain_name }}" 
+        dns_domain_name: "{{ veeam.dns_domain_name }}"
+        hostname: "{{ veeam.hostname }}" 
+        domain_admin_user: "{{ veeam.domain_admin_user }}"
+        domain_admin_password: "{{ veeam.domain_admin_password }}" 
         state: "domain"
       register: domain_join_result
 
