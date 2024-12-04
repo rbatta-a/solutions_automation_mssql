@@ -26,9 +26,12 @@ vm_cpus = 8
 vm_memory = 16384
 os_disk_size = "200"
 data_disk_size = "1024"
-datastore_os = "Metro_Cluster1_Prod01"
-datastore_data = "sql-sizer-data"
-datastore_data2 = "sql-sizer-log"
+datastore_os = "vvOLs-Metro"
+datastore_data = "vvOLs-Metro"
+#These below are the original aspects present and we added from the MSSQLDC  the above datastaore_os and datastore_data
+#datastore_os = "Metro_Cluster1_Prod01"
+#datastore_data = "sql-sizer-data"
+#datastore_data2 = "sql-sizer-log"
 winadminpass = "VMware1!"
 contentlib_name = "SolutionsLab-ContentLib"
 
