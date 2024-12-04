@@ -1,0 +1,72 @@
+- name: Flash array file system export module
+ collections:
+ - purestorage.flasharray
+ vars_files:
+    - "../vars/common.yml"
+ gather_facts: yes
+ tasks:
+  ## Verify file system export creation
+  - name: Create a file system
+   purefa_fs:
+    name: "{{ veeam.fs_name }}"
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+    state: present
+   ignore_errors: "{{ global_config.ignore_errors }}"
+  - name: Create a directory file system
+   purefa_directory:
+    name: "{{ veeam.fs_dir_name }}"
+    filesystem: "{{ veeam.fs_name }}"
+    path: "{{ veeam.fs_dir_path }}"
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+    state: present
+   ignore_errors: "{{ global_config.ignore_errors }}"
+  - name: Create a nfs policy
+   purefa_policy:
+    name: "{{ veeam.nfs_policy_name }}"
+    policy: "nfs"
+    nfs_access: "{{ veeam.nfs_access }}"
+    nfs_permission: "{{ veeam.nfs_permission }}"
+    client: "{{ veeam.nfs_client }}"
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+    state: present
+   ignore_errors: "{{ global_config.ignore_errors }}"
+  - name: Create a smb policy
+   purefa_policy:
+    name: "{{ veeam.smb_policy_name }}"
+    policy: "smb"
+    smb_encrypt: "{{ veeam.smb_encrypt }}"
+    smb_anon_allowed: "{{ veeam.smb_anon_allowed }}"
+    client: "{{ veeam.smb_client }}"
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+    state: present
+   ignore_errors: "{{ global_config.ignore_errors }}"
+  - name: Create a file system export with nfs and smb policies
+   purefa_export:
+    name: "{{ veeam.fs_export_name }}"
+    filesystem: "{{ veeam.fs_name }}"
+    directory: "{{ veeam.fs_dir_name }}"
+    smb_policy: "{{ veeam.smb_policy_name }}"
+    nfs_policy: "{{ veeam.nfs_policy_name }}"
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+    state: present
+   ignore_errors: "{{ global_config.ignore_errors }}"
+  - name: Collect file system information
+   purefa_info:
+    gather_subset:
+    - filesystems
+    fa_url: "{{ veeam.fa_url }}"
+    api_token: "{{ veeam.fa_api_token }}"
+   register: array_info
+   ignore_errors: "{{ global_config.ignore_errors }}"
+  - name: Validate export parameters
+   vars:
+    fs_export_info: "{{ array_info['purefa_info']['filesystems'][veeam.fs_name]['directories'][veeam.fs_dir_name]}}"
+   assert:
+    that:
+     - fs_export_info['exports'] | length == 2
+   ignore_errors: "{{ global_config.ignore_errors }}"
