@@ -1,0 +1,44 @@
+- name: Restore NFS share from Backup
+  hosts: veeam-server
+  vars: 
+    nfs_share_restore_point: "10.21.122.33:/test-export"
+    restore_path: "C:\\Restore\\test-export"  # Local path on the server where data will be restored
+  tasks:
+    - name: Debug restore operation
+      ansible.builtin.debug:
+        msg: 
+         Initiate restore for NFS Share {{ nfs_share_restore_point }} to {{ restore_path }}
+
+    - name: Execute multiline PowerShell script for restore
+      win_shell: |
+        # Import the Veeam PowerShell module
+        Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
+
+        # Get the backup job
+        $backupJob = Get-VBRBackup | Where-Object { $_.Name -eq "Backup {{ nfs_share_restore_point }} Job" }
+
+        if ($backupJob) {
+          # Get the restore point for the backup job
+          $restorePoint = Get-VBRRestorePoint -Backup $backupJob | Sort-Object CreationTime -Descending | Select-Object -First 1
+
+          # Restore the data to the specified location
+          $restoreSession = Start-VBRNASRestore -RestorePoint $restorePoint -TargetPath "{{ restore_path }}" -RestoreMode "Copy"
+
+          # Monitor the restore session
+          while ($restoreSession.State -eq "Working") {
+              Start-Sleep -Seconds 10
+              Write-Host "Restore in progress..."
+          }
+
+          # Check if the restore completed successfully
+          if ($restoreSession.State -eq "Success") {
+              Write-Host "Restore completed successfully."
+          } else {
+              Write-Host "Restore failed. Please check the logs for more details."
+          }
+        } else {
+          Write-Host "No backup job found for {{ nfs_share_restore_point }}."
+        }
+
+      args:
+        executable: powershell
