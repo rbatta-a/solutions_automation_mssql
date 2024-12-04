@@ -2,7 +2,7 @@
   hosts: veeam-server
   vars:
     nfs_share_restore_point: "10.21.122.33:/test-export"
-    restore_path: "C:\\Restore\\test-export"
+    restore_path: "10.21.122.33:/test-export/restore"
   tasks:
     - name: Debug restore operation
       ansible.builtin.debug:
