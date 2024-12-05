@@ -15,8 +15,8 @@
         $server = Get-VBRUnstructuredServer -Name "{{ nfs_share_mount_point }}"
         $object = New-VBRNASBackupJobObject -Server $server -Path "{{ nfs_share_mount_point }}"
         $repository = Get-VBRBackupRepository -Name "10.21.210.156" 
-        Add-VBRNASBackupJob -BackupObject $object -ShortTermBackupRepository $repository -Name "Backup {{ nfs_share_mount_point }} Job"
-        Get-VBRJob -Name "Backup {{ nfs_share_mount_point }} Job" | Start-VBRJob
+        Add-VBRNASBackupJob -BackupObject $object -ShortTermBackupRepository $repository -Name "BackupJob"
+        Get-VBRJob -Name "BackupJob" | Start-VBRJob
 
       args:
         executable: powershell
