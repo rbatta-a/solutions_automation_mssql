@@ -1,5 +1,5 @@
 - name: Flash array active directory management module
-  hosts: "{{ hostgroup | default('all') }}"
+  hosts: localhost
   vars_files:
     - "../vars/common.yml"
   gather_facts: yes
