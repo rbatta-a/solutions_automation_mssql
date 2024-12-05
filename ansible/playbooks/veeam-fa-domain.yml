@@ -13,4 +13,5 @@
         password: "{{ veeam.domain_admin_password }}"
         fa_url: "{{ veeam.fa_url }}"
         api_token: "{{ veeam.fa_api_token }}"
+        validate_certs: no
       ignore_errors: true
