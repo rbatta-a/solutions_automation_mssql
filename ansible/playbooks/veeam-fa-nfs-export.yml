@@ -11,7 +11,6 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-      validate_certs: no
     ignore_errors: true
   - name: Create a directory file system
     purestorage.flasharray.purefa_directory:
@@ -21,7 +20,6 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-      validate_certs: no
     ignore_errors: true
   - name: Create a nfs policy
     purestorage.flasharray.purefa_policy:
@@ -33,7 +31,6 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-      validate_certs: no
     ignore_errors: true
   - name: Create a smb policy
     purestorage.flasharray.purefa_policy:
@@ -45,7 +42,6 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-      validate_certs: no
     ignore_errors: true
   - name: Create a file system export with nfs and smb policies
     purestorage.flasharray.purefa_export:
@@ -57,5 +53,4 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-      validate_certs: no
     ignore_errors: true
