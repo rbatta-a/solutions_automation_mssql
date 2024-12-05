@@ -62,7 +62,7 @@ The abopve Veeam setup is done
 '''
 
 
-if sol == 'veeam-server':
+if sol == 'veeam-linux-servers':
     append_ip_to_hosts_in_veeam_linux_server(ip_addresses=ips)
 if sol == 'MSSQL': #or 'MSSQLDC':
     print(sol)
