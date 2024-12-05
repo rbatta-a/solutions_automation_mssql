@@ -1,5 +1,5 @@
 - name: Flash array active directory management module
-  hosts: veeam-server
+  hosts: "{{ hostgroup | default('all') }}"
   vars_files:
     - "../vars/common.yml"
   gather_facts: yes
