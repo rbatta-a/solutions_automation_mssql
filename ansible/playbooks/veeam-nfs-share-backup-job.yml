@@ -1,19 +1,19 @@
 - name: Add NFS share mount Point  
   hosts: veeam-server
   vars: 
-    nfs_share_mount_point: "\\10.21.122.33\test-export"
+    nfs_share_mount_point: "Z:\"
     backup_repository: "10.21.210.156"
   tasks:
     - name: Debug the backup job creation
       ansible.builtin.debug:
         msg: "Create and run the NFS share mount point {{ nfs_share_mount_point }} backup job."
 
-    - name: Execute PowerShell script for Veeam Backup with Correct Path
+    - name: Execute PowerShell script for Veeam Backup with Mounted Drive
       win_shell: |
         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
 
-        # Path to NFS share
+        # Path to mounted NFS share
         $sharePath = "{{ nfs_share_mount_point }}"
 
         # Test the path
