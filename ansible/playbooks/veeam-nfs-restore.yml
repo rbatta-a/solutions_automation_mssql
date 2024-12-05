@@ -15,10 +15,10 @@
         
         # Define variables
         $backupJobName = "BackupJob"  # The name of the backup job you want to restore from
-        $restorePath = "10.21.122.33:/test-export/newrestore3"  # The target path where the data will be restored
+        $restorePath = "10.21.122.33:/test-export/newrestore4"  # The target path where the data will be restored
         $sourcePath = "10.21.122.33:/test-export"  # The source path to restore
         $repositoryName = "10.21.210.156"  # Repository to search for the backup
-        $restoreJobName = "RestoreJob3"
+        $restoreJobName = "RestoreJob4"
         
         # Get the backup repository
         $repository = Get-VBRBackupRepository -Name $repositoryName
