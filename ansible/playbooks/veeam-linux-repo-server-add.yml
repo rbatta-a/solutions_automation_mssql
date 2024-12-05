@@ -11,7 +11,7 @@
         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
         $linsrv = Add-VBRLinux -Name {{ hostvars.linux_repo_server.ansible_host }} -SSHUser root -SSHPassword pure123 
-        Add-VBRBackupRepository -Name "{{ hostvars.linux_repo_server.ansible_host}}"  -Server $linsrv -Type LinuxLocal -Folder "/home/"
+        Add-VBRBackupRepository -Name "{{ hostvars.linux_repo_server.ansible_host}}"  -Server $linsrv -Type LinuxLocal -Folder "/mnt/"
       args:
         executable: powershell
 
