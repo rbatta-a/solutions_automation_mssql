@@ -1,64 +1,22 @@
 - name: Add NFS share mount Point  
   hosts: veeam-server
   vars: 
-    nfs_share_mount_point: "Z:\"
-    backup_repository: "10.21.210.156"
+    nfs_share_mount_point: "10.21.122.33:/test-export" 
   tasks:
-    - name: Debug the backup job creation
+    - name: Execute multiline PowerShell script
       ansible.builtin.debug:
-        msg: "Create and run the NFS share mount point {{ nfs_share_mount_point }} backup job."
+        msg: 
+         Create and Run the NFS Share mount point {{ nfs_share_mount_point }} Backup Job
 
-    - name: Execute PowerShell script for Veeam Backup with Mounted Drive
+    - name: Execute multiline PowerShell script
       win_shell: |
         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
-
-        # Path to mounted NFS share
-        $sharePath = "{{ nfs_share_mount_point }}"
-
-        # Test the path
-        Write-Host "Testing access to: $sharePath"
-        if (!(Test-Path -Path $sharePath)) {
-            Write-Host "Path does not exist or is not accessible: $sharePath"
-            exit 1
-        }
-
-        # Discover files
-        $files = Get-ChildItem -Path $sharePath -Recurse
-        if (!$files) {
-            Write-Host "No files found in path: $sharePath. Exiting."
-            exit 1
-        }
-        Write-Host "Files found: $($files | Measure-Object).Count"
-
-        # Add the NFS share to the job object
-        $serverName = "NFS_Server"
-        $server = Get-VBRUnstructuredServer -Name $serverName
-        if (-not $server) {
-            Write-Host "Failed to find server: $serverName"
-            exit 1
-        }
-
-        $object = New-VBRNASBackupJobObject -Server $server -Path $sharePath
-        if (-not $object) {
-            Write-Host "Failed to create NAS backup job object for path: $sharePath"
-            exit 1
-        }
-
-        $repository = Get-VBRBackupRepository -Name "{{ backup_repository }}"
-        if (-not $repository) {
-            Write-Host "Failed to find repository: {{ backup_repository }}"
-            exit 1
-        }
-
-        $jobName = "Backup {{ nfs_share_mount_point }} Job"
-        $job = Add-VBRNASBackupJob -BackupObject $object -ShortTermBackupRepository $repository -Name $jobName
-        if ($job) {
-            Write-Host "Starting backup job: $jobName"
-            Start-VBRJob -Job $job
-        } else {
-            Write-Host "Failed to create the backup job: $jobName"
-        }
+        $server = Get-VBRUnstructuredServer -Name "{{ nfs_share_mount_point }}"
+        $object = New-VBRNASBackupJobObject -Server $server -Path "{{ nfs_share_mount_point }}"
+        $repository = Get-VBRBackupRepository -Name "10.21.210.156" 
+        Add-VBRNASBackupJob -BackupObject $object -ShortTermBackupRepository $repository -Name "Backup {{ nfs_share_mount_point }} Job"
+        Get-VBRJob -Name "Backup {{ nfs_share_mount_point }} Job" | Start-VBRJob
 
       args:
         executable: powershell
