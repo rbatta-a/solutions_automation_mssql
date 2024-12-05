@@ -10,9 +10,7 @@
 
     - name: Execute multiline PowerShell script for restore
       win_shell: |
-         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
-        
         # Define variables
         $backupJobName = "BackupJob"  # The name of the backup job you want to restore from
         $restorePath = "10.21.122.33:/test-export/newrestore4"  # The target path where the data will be restored
