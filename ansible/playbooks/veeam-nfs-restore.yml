@@ -2,7 +2,7 @@
   hosts: veeam-server
   vars:
     nfs_share_restore_point: "10.21.122.33:/test-export"
-    restore_path: "10.21.122.33:/test-export/restore"
+    restore_path: "10.21.122.33:/test-export/newrestore"
   tasks:
     - name: Debug restore operation
       ansible.builtin.debug:
@@ -10,31 +10,41 @@
 
     - name: Execute multiline PowerShell script for restore
       win_shell: |
+         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
-
-        $backupJob = Get-VBRBackup | Where-Object { $_.Name -eq "Backup {{ nfs_share_restore_point }}" }
-
-        if ($backupJob) {
-            $restorePoint = Get-VBRRestorePoint -Backup $backupJob | Sort-Object CreationTime -Descending | Select-Object -First 1
-
-            if ($restorePoint) {
-                $restoreSession = Start-VBRNASRestore -RestorePoint $restorePoint -TargetPath "{{ restore_path }}" -RestoreMode "Copy"
-
-                while ($restoreSession.State -eq "Working") {
-                    Start-Sleep -Seconds 10
-                    Write-Host "Restore in progress..."
-                }
-
-                if ($restoreSession.State -eq "Success") {
-                    Write-Host "Restore completed successfully."
-                } else {
-                    Write-Host "Restore failed. State: $($restoreSession.State)"
-                }
-            } else {
-                Write-Host "No restore point found for the backup job."
-            }
-        } else {
-            Write-Host "Backup job not found."
+        
+        # Define variables
+        $backupJobName = "BackupJob"  # The name of the backup job you want to restore from
+        $restorePath = "10.21.122.33:/test-export/newrestore3"  # The target path where the data will be restored
+        $sourcePath = "10.21.122.33:/test-export"  # The source path to restore
+        $repositoryName = "10.21.210.156"  # Repository to search for the backup
+        $restoreJobName = "RestoreJob3"
+        
+        # Get the backup repository
+        $repository = Get-VBRBackupRepository -Name $repositoryName
+        if (-not $repository) {
+            Write-Host "Failed to find repository: $repositoryName"
+            exit 1
         }
+        
+        # Find the backup job by name
+        $backup = Get-VBRUnstructuredBackup -Name $backupJobName
+        if (-not $backup) {
+            Write-Host "Failed to find backup job: $backupJobName"
+            exit 1
+        }
+        
+        # Create a NAS restore point
+        $restorePoint = Get-VBRUnstructuredBackupRestorePoint -Backup $backup  | Sort-Object CreationTime -Descending | Select-Object -First 1
+        if (-not $restorePoint) {
+            Write-Host "No restore points found for backup job: $backupJobName"
+            exit 1
+        }
+        
+        $server = Get-VBRUnstructuredServer -Name $sourcePath
+        # Start the restore job
+        Start-VBRNasBackupRestore -RestorePoint $restorePoint -DestinationFolderPath $restorePath -DestinationServer $server -OverwriteMode Overwrite
+       
+
       args:
         executable: powershell
