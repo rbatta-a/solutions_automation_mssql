@@ -5,7 +5,7 @@ vsphere_user = "administrator@vsphere.local"
 vsphere_password = ""
 
 #common
-osguest_id = "ubuntu64Guest"
+osguest_id = "oracleLinux64Guest"
 internal_domain = "puretec.purestorage.com"
 vmSubnet = "VLAN-2210"
 dns_servers = ["10.21.210.98"]
@@ -21,7 +21,7 @@ vm_name = "veeam-linux-servers"
 network = "10.21.210.0"
 netmask = "24"
 vm_ip = ["10.21.210.22"]
-vmware_os_template = "linux-ubuntu-22.04lts-v24.02"
+vmware_os_template = "linux-oel-8-v24.10"
 vm_cpus = 4
 vm_memory = 4096
 os_disk_size = "100"
