@@ -22,6 +22,48 @@ print(filename)
 print(sol)
 # check if  the solution is windows
 # prepare the hosts.ini with more details to login 
+"""
+this below section logic is purely for Veeam values passing to the hosts and works for Veeam alone.
+"""
+direct_veeam_path =  '/vijayveeam/racsetup_copy/ansible'
+os.chdir(direct_veeam_path)
+print(os.getcwd())
+
+def append_ip_to_hosts_in_veeam_linux_server(ip_addresses=ips, hosts_file= os.getcwd() + '/veeam-asm/hosts.yml'):
+    '''
+    This method will remove the old hosts.yml file (if it exists) and create a new one with the provided IP addresses.
+    '''
+    if os.path.exists(hosts_file):
+        os.truncate(hosts_file, 0)  # Truncate the file to size 0
+        print(f"Old file {hosts_file} is truncated.")
+        
+    hosts_data = {
+        'all': {
+            'children': {
+                'dbfs': {
+                    'hosts': {}
+                }
+            }
+        }
+    }
+
+    # Append new IP addresses to the hosts section
+    for ip_address in ip_addresses:
+        hosts_data['all']['children']['dbfs']['hosts'][ip_address] = {'ansible_ssh_user': 'ansible'}
+        print(f"IP address {ip_address} added successfully to {hosts_file}")
+
+    # Write the new data to the hosts file
+    with open(hosts_file, 'w') as file:
+        file.write('---\n')  # Add the YAML document start marker
+        yaml.dump(hosts_data, file, default_flow_style=False)
+
+'''
+The abopve Veeam setup is done 
+'''
+
+
+if sol == 'Veeam':
+    append_ip_to_hosts_in_veeam_linux_server(ip_addresses=ips)
 if sol == 'MSSQL': #or 'MSSQLDC':
     print(sol)
     with open(filename,'w') as fh:
@@ -54,45 +96,11 @@ else:
 #os.chdir(os.path.join(os.getcwd(), '..', '..', 'ansible')) 
 # These files needs to be checked in so that the hardcoded lines can be removed in future.
 
-direct_asm_path = '/root/COPY_OF_ORACLE_BUILD/ansible'
-os.chdir(direct_asm_path)
-print(os.getcwd())
-
-def append_ip_to_hosts(ip_addresses, hosts_file= os.getcwd() + '/inventory-asm-demo/hosts.yml'):
-    '''
-    This method will remove the old hosts.yml file (if it exists) and create a new one with the provided IP addresses.
-    '''
-    if os.path.exists(hosts_file):
-        os.truncate(hosts_file, 0)  # Truncate the file to size 0
-        print(f"Old file {hosts_file} is truncated.")
-        
-    hosts_data = {
-        'all': {
-            'children': {
-                'dbfs': {
-                    'hosts': {}
-                }
-            }
-        }
-    }
-
-    # Append new IP addresses to the hosts section
-    for ip_address in ip_addresses:
-        hosts_data['all']['children']['dbfs']['hosts'][ip_address] = {'ansible_ssh_user': 'ansible'}
-        print(f"IP address {ip_address} added successfully to {hosts_file}")
-
-    # Write the new data to the hosts file
-    with open(hosts_file, 'w') as file:
-        file.write('---\n')  # Add the YAML document start marker
-        yaml.dump(hosts_data, file, default_flow_style=False)
-
-
-#os.chdir(os.path.join(os.getcwd(), '..', '..', 'ansible')) 
-# These files needs to be checked in so that the hardcoded lines can be removed in future.
 
 direct_asm_path = '/root/COPY_OF_ORACLE_BUILD/ansible'
 os.chdir(direct_asm_path)
 print(os.getcwd())
+
 
 def append_ip_to_hosts(ip_addresses, hosts_file= os.getcwd() + '/inventory-asm-demo/hosts.yml'):
     '''
