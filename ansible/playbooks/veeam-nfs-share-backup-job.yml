@@ -8,7 +8,7 @@
       ansible.builtin.debug:
         msg: "Create and run the NFS share mount point {{ nfs_share_mount_point }} backup job."
 
-    - name: Execute PowerShell script for Veeam Backup
+    - name: Execute PowerShell script for Veeam Backup with Debugging
       win_shell: |
         # Import the Veeam PowerShell module
         Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
@@ -19,20 +19,23 @@
         $serverName = $parts[0]
         $sharePath = $parts[1]
 
-        # Validate that both serverName and sharePath are not empty
-        if (-not $serverName -or -not $sharePath) {
-            Write-Host "Invalid NFS share mount point format: $nfs_share_mount_point"
+        # Validate the path
+        Write-Host "Checking files in path: $sharePath"
+        $files = Get-ChildItem -Path $sharePath -Recurse
+        if (!$files) {
+            Write-Host "No files found in path: $sharePath. Exiting."
             exit 1
         }
+        Write-Host "Files found: $($files | Measure-Object).Count"
 
         # Get the NFS server
         $server = Get-VBRUnstructuredServer -Name $serverName
         if (-not $server) {
-            Write-Host "Failed to find the server: $serverName"
+            Write-Host "Failed to find server: $serverName"
             exit 1
         }
 
-        # Add NFS path to the backup job
+        # Add the NFS share to the job object
         $object = New-VBRNASBackupJobObject -Server $server -Path $sharePath
         if (-not $object) {
             Write-Host "Failed to create NAS backup job object for path: $sharePath"
