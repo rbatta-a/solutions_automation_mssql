@@ -1,8 +1,8 @@
 - name: Flash array file system export module
- vars_files:
+  vars_files:
     - "../vars/common.yml"
- gather_facts: yes
- tasks:
+  gather_facts: yes
+  tasks:
   ## Verify file system export creation
   - name: Create a file system
     purestorage.flasharray.purefa_fs:
