@@ -10,7 +10,7 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-    ignore_errors: "{{ global_config.ignore_errors }}"
+    ignore_errors: true
   - name: Create a directory file system
     purestorage.flasharray.purefa_directory:
       name: "{{ veeam.fs_dir_name }}"
@@ -19,7 +19,7 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-    ignore_errors: "{{ global_config.ignore_errors }}"
+    ignore_errors: true
   - name: Create a nfs policy
     purestorage.flasharray.purefa_policy:
       name: "{{ veeam.nfs_policy_name }}"
@@ -30,7 +30,7 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-    ignore_errors: "{{ global_config.ignore_errors }}"
+    ignore_errors: true
   - name: Create a smb policy
     purestorage.flasharray.purefa_policy:
       name: "{{ veeam.smb_policy_name }}"
@@ -41,7 +41,7 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-    ignore_errors: "{{ global_config.ignore_errors }}"
+    ignore_errors: true
   - name: Create a file system export with nfs and smb policies
     purestorage.flasharray.purefa_export:
       name: "{{ veeam.fs_export_name }}"
@@ -52,4 +52,4 @@
       fa_url: "{{ veeam.fa_url }}"
       api_token: "{{ veeam.fa_api_token }}"
       state: present
-    ignore_errors: "{{ global_config.ignore_errors }}"
+    ignore_errors: true
