@@ -5,11 +5,13 @@
       ansible.builtin.debug:
         msg: 
          The Windows Repo Server is {{ hostvars.windows_repo_server.ansible_host }}
+      ignore_errors: true  
 
     - name: Create directory 
       ansible.windows.win_powershell:
         script: |
-          New-Item -Path "C:\PureStorageBackup" -ItemType Directory 
+          New-Item -Path "C:\PureStorageBackup" -ItemType Directory
+      ignore_errors: true
 
     - name: Execute multiline PowerShell script
       win_shell: |
@@ -20,6 +22,7 @@
         Add-VBRBackupRepository -Name "{{ hostvars.windows_repo_server.ansible_host }}" -Server $server -Folder "c:\PureStorageBackup" -Type WinLocal 
       args:
         executable: powershell
+      ignore_errors: true
 
 
 
