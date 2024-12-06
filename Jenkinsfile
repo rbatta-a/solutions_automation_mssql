@@ -164,9 +164,9 @@ pipeline {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml"
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
-	    // if (solname == 'MSSQL') {
-        //         sh script: "cd /root/anna/Solutions-as-Code/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections;  export ANSIBLE_ROLES_PATH=/root/anna/Solutions-as-Code/ansible/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i hosts.ini  playbooks/mssql-install.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
-        //     } 
+	    if (solname == 'MSSQL') {
+                sh script: "ansible-playbook -i hosts.ini  ../../playbooks/mssql-install.yml -v"
+            } 
             if  (solname == 'Oracle') {
                 sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/single-instance-asm.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
             }
