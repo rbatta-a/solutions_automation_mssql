@@ -165,7 +165,7 @@ pipeline {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
 	    if (solname == 'MSSQL') {
-                sh script: "cd /root/anna/Solutions-as-Code/ansible"
+                // sh script: "cd /root/anna/Solutions-as-Code/ansible"
 		sh script: "ansible-playbook -i hosts.ini  playbooks/mssql-install.yml"+ " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_winrm_server_cert_validation=ignore ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'"
             } 
             if  (solname == 'Oracle') {
