@@ -27,7 +27,7 @@ if sol == 'MSSQL': #or 'MSSQLDC':
     with open(filename,'w') as fh:
         fh.write("[win]\n")
         for name in names:
-            fh.write(name.rstrip().split('.')[0]+ '.fslab.local' + '\n')
+            fh.write(name.rstrip().split('.')[0]+ '.puretec.purestorage.com' + '\n')
         fh.write("[win:vars]\n")
         fh.write("ansible_user=administrator\n")
         fh.write("ansible_password=VMware1!\n")
