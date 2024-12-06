@@ -165,9 +165,8 @@ pipeline {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
 	    if (solname == 'MSSQL') {
-                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml"
+                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml" -vvv
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
-		sh script: "cd  /root/racsetup_copy/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-rac -e hostgroup=dbfs playbooks/racattackl-install.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
 
             } 
             if  (solname == 'Oracle') {
