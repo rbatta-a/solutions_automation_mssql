@@ -165,8 +165,7 @@ pipeline {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
 	    if (solname == 'MSSQL') {
-                // sh script: "cd /root/anna/Solutions-as-Code/ansible"
-		sh script: "ansible-playbook -i hosts.ini  playbooks/mssql-install.yml"+ " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_winrm_server_cert_validation=ignore ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'"
+                sh script: "cd /root/anna/Solutions-as-Code/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections;  export ANSIBLE_ROLES_PATH=/root/anna/Solutions-as-Code/ansible/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i hosts.ini  playbooks/mssql-install.yml"
             } 
             if  (solname == 'Oracle') {
                 sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/single-instance-asm.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
