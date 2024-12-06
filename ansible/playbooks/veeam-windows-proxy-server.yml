@@ -11,12 +11,14 @@
       ansible.windows.win_powershell:
         script: |
           Import-Module Veeam.Backup.PowerShell 
+      ignore_errors: true    
 
     - name: Add Credentails for Windows Veeam Proxy Server
       ansible.windows.win_powershell:
         script: |
           Add-VBRWinServer -Name {{ hostvars.windows_proxy_server.ansible_host }} -Password {{ ansible_password }} -User {{ ansible_user }}  -Description "Veeam Windows Proxy Server"
-
+      ignore_errors: true
+      
     - name: Add Windows Veeam Proxy Server
       ansible.windows.win_powershell:
         script: |
