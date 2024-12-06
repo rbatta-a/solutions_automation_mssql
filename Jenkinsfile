@@ -165,7 +165,6 @@ pipeline {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
 	    if (solname == 'MSSQL') {
-		println "vpath ------${vpath}-----"
 		println "Windows_Admin_Pass ------${WINDOWS_ADMIN_PASS}-----"
                 sh script: "cd /root/anna/Solutions-as-Code/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/anna/Solutions-as-Code/ansible/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i hosts.ini  playbooks/mssql-install.yml"
             } 
