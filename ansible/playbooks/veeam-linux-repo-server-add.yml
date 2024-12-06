@@ -14,6 +14,7 @@
         Add-VBRBackupRepository -Name "{{ hostvars.linux_repo_server.ansible_host}}"  -Server $linsrv -Type LinuxLocal -Folder "/mnt/"
       args:
         executable: powershell
+      ignore_errors: true
 
 
 
