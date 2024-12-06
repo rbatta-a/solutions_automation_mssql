@@ -29,7 +29,7 @@ if sol == 'MSSQL': #or 'MSSQLDC':
         for name in names:
             fh.write(name.rstrip().split('.')[0]+ '.fslab.local' + '\n')
         fh.write("[win:vars]\n")
-        fh.write("ansible_user=superna\n")
+        fh.write("ansible_user=administrator\n")
         fh.write("ansible_password=VMware1!\n")
         # fh.write("ansible_user=vidm@FSLAB.LOCAL\n")
         # fh.write("ansible_password=Osmium76$\n")
