@@ -165,6 +165,7 @@ pipeline {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
 	    if (solname == 'MSSQL') {
+		sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml"
                 sh script: "ansible-playbook -i hosts.ini  ../../ansible/playbooks/mssql-install.yml -v"
             } 
             if  (solname == 'Oracle') {
