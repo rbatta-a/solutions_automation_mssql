@@ -161,6 +161,7 @@ pipeline {
             println solname
             println "------------------"
             if (solname == 'MSSQLDC_Test') {
+		println (solname,"164")
                 // sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml"
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-install.yml -v"
             } 
