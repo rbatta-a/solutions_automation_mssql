@@ -19,11 +19,11 @@ print(f"The ips are {ips} and the vms domain names are  {names} \n\n\n")
 var_filename = 'hosts.yml'
 filename = 'hosts.ini'
 print(filename)
-print(sol)
+print("22",sol)
 # check if  the solution is windows
 # prepare the hosts.ini with more details to login 
 if sol == 'MSSQLDC_Test' #'MSSQL_Test':
-    print(sol)
+    print("26",sol)
     with open(filename,'w') as fh:
         fh.write("[win]\n")
         for name in names:
