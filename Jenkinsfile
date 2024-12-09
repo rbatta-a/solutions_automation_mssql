@@ -160,11 +160,11 @@ pipeline {
 	    println "Installing and conifguring the solution"
             println solname
             println "------------------"
-            if (solname == 'MSSQLDC') {
+            if (solname == 'MSSQLDC_Test') {
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml"
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-install.yml"
             } 
-	    if (solname == 'MSSQL') {
+	    if (solname == 'MSSQL_Test') {
                 sh script: "ansible-playbook -i hosts.ini  ../../ansible/playbooks/mssql-install.yml -v"
             } 
             if  (solname == 'Oracle') {
