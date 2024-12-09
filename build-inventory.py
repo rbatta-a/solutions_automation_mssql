@@ -22,7 +22,7 @@ print(filename)
 print(sol)
 # check if  the solution is windows
 # prepare the hosts.ini with more details to login 
-if sol == 'MSSQL': #or 'MSSQLDC':
+if sol == 'MSSQL_Test'or 'MSSQLDC_Test':
     print(sol)
     with open(filename,'w') as fh:
         fh.write("[win]\n")
