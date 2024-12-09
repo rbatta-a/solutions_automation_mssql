@@ -129,10 +129,10 @@ resource "vsphere_virtual_machine" "vm" {
       windows_options {
         computer_name  = format("%s-%d", var.vm_name ,count.index +1)
         admin_password = "${var.winadminpass}"
-        join_domain      = "lab.local"
-        domain_admin_user = "superna"
-        domain_admin_password = "VMware1!"
-        organization_name = "CN=Computers,DC=fslab,DC=local"
+        # join_domain      = "fslab.local"
+        # domain_admin_user = "vidm"
+        # domain_admin_password = "Osmium76$"
+        # organization_name = "CN=Computers,DC=fslab,DC=local"
         
         
       }
