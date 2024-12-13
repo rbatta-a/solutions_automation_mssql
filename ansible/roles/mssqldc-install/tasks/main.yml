@@ -1,11 +1,11 @@
 
 ---
 
-- name: Copy file to C:\
-  ansible.windows.win_copy:
-    src: \\fileserverdb\packages\SQL2022
-    dest: C:\
-    remote_src: true
+# - name: Copy file to C:\
+#   ansible.windows.win_copy:
+#     src: \\fileserverdb\packages\SQL2022
+#     dest: C:\
+#     remote_src: true
 
 - name: Initialize additional disks 
   win_initialize_disk:
