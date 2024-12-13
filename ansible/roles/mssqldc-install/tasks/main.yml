@@ -47,6 +47,20 @@
 #
 
 # Load required powershell modules
+
+- name: Install NuGet provider
+  ansible.windows.win_shell: |
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+  args:
+    executable: powershell
+
+- name: Install PowerShellGet module
+  ansible.windows.win_shell: |
+    Install-Module -Name PowerShellGet -Force
+  args:
+    executable: powershell
+
 - name: Powershell | Check for SQLServer DSC Powershell module
   win_psmodule:
     name: SQLServerDsc
