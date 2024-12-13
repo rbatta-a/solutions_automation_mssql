@@ -48,13 +48,22 @@
 
 # Load required powershell modules
 
-- name: Powershell | Install NuGet provider and trust PSGallery
-  ansible.windows.win_shell:
-    command: |
-      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-      Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-    args:
-      executable: powershell
+- name: Powershell | Install NuGet provider
+  win_psmodule:
+    name: NuGet
+    state: present
+
+- name: Powershell | Trust PSGallery
+  ansible.windows.win_shell: |
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+  args:
+    executable: powershell
+
+- name: Powershell | Set execution policy to RemoteSigned
+  ansible.windows.win_shell: |
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
+  args:
+    executable: powershell
 
 - name: Powershell | Install PowerShellGet module
   ansible.windows.win_shell:
