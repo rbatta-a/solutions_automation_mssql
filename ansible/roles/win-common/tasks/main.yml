@@ -3,7 +3,7 @@
     - name: Map SMB share
       win_mapped_drive:
         letter: Z
-        path: \\fileserverdb\packages
+        path: \\s500-2118\share_packages
         state: present
       register: mount_drive
 
