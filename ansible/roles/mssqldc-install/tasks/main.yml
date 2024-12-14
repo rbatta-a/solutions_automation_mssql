@@ -54,10 +54,16 @@
   args:
     executable: powershell
     
-- name: Powershell | Install NuGet provider and trust PSGallery
+- name: Powershell | Install NuGet provider
   win_psmodule:
     name: NuGet
     state: present
+
+- name: Powershell | Trust PSGallery
+  ansible.windows.win_shell: |
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+  args:
+    executable: powershell
     
 - name: Powershell | Install SqlServer PowerShell module
   win_psmodule:
