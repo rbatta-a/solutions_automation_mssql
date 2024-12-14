@@ -48,28 +48,23 @@
 
 # Load required powershell modules
 
-- name: Powershell | Temporarily set execution policy to RemoteSigned
-  ansible.windows.win_shell: |
-    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-  args:
-    executable: powershell
-    
 - name: Powershell | Install NuGet provider
-  win_psmodule:
-    name: NuGet
-    state: present
+      ansible.windows.win_shell: |
+        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+      args:
+        executable: powershell
 
-- name: Powershell | Trust PSGallery
-  ansible.windows.win_shell: |
-    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-  args:
-    executable: powershell
-    
-- name: Powershell | Install SqlServer PowerShell module
-  win_psmodule:
-    name: SqlServer
-    state: present
-    accept_license: true
+    - name: Powershell | Set PSGallery as trusted repository
+      ansible.windows.win_shell: |
+        Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+      args:
+        executable: powershell
+
+    - name: Powershell | Install SqlServer PowerShell module
+      win_psmodule:
+        name: SqlServer
+        state: present
+        accept_license: true
 
 - name: Powershell | Run script bypassing execution policy
   ansible.windows.win_shell: |
