@@ -12,7 +12,7 @@
 
 
 - name: create DB
-  win_command: sqlcmd -S "SQL2022-DC-1\MSSQL2019" -U "SQL2022-DC-1\Administrator" -P "VMware1!" -i "C:\db.sql"
+  win_command: sqlcmd -S "SQL2022-DC-1\MSSQL2019" -U "Administrator" -P "VMware1!" -i "C:\db.sql"
   register: sqlcmd_out
 
 - name: print result
