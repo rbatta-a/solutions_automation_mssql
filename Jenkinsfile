@@ -234,6 +234,11 @@ pipeline {
         }
         if (params.Test) {
           	println "Executing Performance step"
+		
+		if (solname == 'MSSQLDC_Test') {
+		println "-----${solname}---"
+                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-test.yml -v"
+            	} 
           	if  (solname == 'Veeam') {
 			dir("${VEEAM_SERV_WSDIR}") {
 		          echo "current working directory: ${pwd()}"
