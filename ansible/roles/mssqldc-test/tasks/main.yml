@@ -1,14 +1,6 @@
 
 ---
 
-- name: Create required directories
-  win_shell: |
-    New-Item -Path "C:\Data1" -ItemType Directory -Force
-    New-Item -Path "C:\Data2" -ItemType Directory -Force
-    New-Item -Path "C:\Data3" -ItemType Directory -Force
-    New-Item -Path "C:\Data4" -ItemType Directory -Force
-    New-Item -Path "C:\Data5" -ItemType Directory -Force
-
 - name: Copy file to C:\
   ansible.windows.win_copy:
     src: "{{ item }}"
