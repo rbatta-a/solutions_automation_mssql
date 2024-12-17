@@ -38,20 +38,20 @@
 #     path: \\fileserverdb\packages\SSMS-Setup-ENU.exe
 #     state: present
 
-- name: Install an DOES
-  win_package:
-    path: \\fileserverdb\packages\DOES.Setup.msi
-    state: present
+# - name: Install an DOES
+#   win_package:
+#     path: \\fileserverdb\packages\DOES.Setup.msi
+#     state: present
 
-- name: Install  powershell
-  win_package:
-    path: \\fileserverdb\packages\PowerShell-7.3.6-win-x64.msi
-    state: present
+# - name: Install  powershell
+#   win_package:
+#     path: \\fileserverdb\packages\PowerShell-7.3.6-win-x64.msi
+#     state: present
 
 
-- name: Import DOES module and run DOES
-  win_command: pwsh C:\script.ps1
-  register: output1
+# - name: Import DOES module and run DOES
+#   win_command: pwsh C:\script.ps1
+#   register: output1
 
 - name: print 
   debug:
