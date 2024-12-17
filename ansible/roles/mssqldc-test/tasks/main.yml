@@ -29,7 +29,7 @@
 
 - name: restart MSSQL
   ansible.windows.win_service:
-    name: MSSQLSERVER
+    name: MSSQL2019
     state: restarted
 
 
