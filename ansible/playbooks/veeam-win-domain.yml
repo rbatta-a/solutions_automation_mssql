@@ -7,7 +7,7 @@
       ansible.windows.win_domain_membership:
         domain_name: "{{ veeam.domain_name }}" 
         dns_domain_name: "{{ veeam.dns_domain_name }}"
-        hostname: "{{ veeam.hostname }}" 
+        #hostname: "{{ veeam.hostname }}" 
         domain_admin_user: "{{ veeam.domain_admin_user }}"
         domain_admin_password: "{{ veeam.domain_admin_password }}" 
         state: "domain"
