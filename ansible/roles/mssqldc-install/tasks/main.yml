@@ -426,7 +426,7 @@
 - name: Enable TCP/IP protocol
   win_dsc:
     resource_name: SqlProtocolTcpIp
-    InstanceName: "MSSQLSERVER2019"
+    InstanceName: "MSSQL2019"
     TcpPort: "1433"
     IpAddressGroup: "IPAll"
     Enabled: True
