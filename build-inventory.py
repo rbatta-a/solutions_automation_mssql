@@ -27,11 +27,11 @@ if sol == 'MSSQLDC_Test':
     with open(filename,'w') as fh:
         fh.write("[win]\n")
         for name in names:
-            # fh.write(name.rstrip().split('.')[0]+ '.lab.local' + '\n')
-            fh.write(name.rstrip().split('.')[0]+ '.puretec.purestorage.com' + '\n')
+            fh.write(name.rstrip().split('.')[0]+ '.lab.local' + '\n')
+            # fh.write(name.rstrip().split('.')[0]+ '.puretec.purestorage.com' + '\n')
         fh.write("[win:vars]\n")
-        fh.write("ansible_user=administrator\n")
-        fh.write("ansible_password=VMware1!\n")
+        fh.write("ansible_user=superna\n")
+        fh.write("ansible_password=Osmium76$\n")
         # fh.write("ansible_user=vidm@FSLAB.LOCAL\n")
         # fh.write("ansible_password=Osmium76$\n")
         fh.write("ansible_connection=winrm\n")
