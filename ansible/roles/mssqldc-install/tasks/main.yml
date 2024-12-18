@@ -267,10 +267,17 @@
     
 #   tags: install_sql
 
+- name: Check if setup.exe exists
+  win_stat:
+    path: 'C:\\MSSQL2019\\setup.exe'
+  register: setup_file
 
+- debug:
+    var: setup_file
+    
 - name: Install SQL Server 2019
-  win_dsc:
-    resource_name: C:\\MSSQL2019\\setup.exe
+  win_command:
+    resource_name: "C:\MSSQL2019\setup.exe"
     Action: Install
     UpdateEnabled: True
     SourcePath: "C:\\MSSQL2019"
