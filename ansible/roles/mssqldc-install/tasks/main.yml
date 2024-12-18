@@ -277,7 +277,7 @@
     
 - name: Install SQL Server 2019
   win_command:
-    resource_name: "C:\MSSQL2019\setup.exe"
+    resource_name: setup
     Action: Install
     UpdateEnabled: True
     SourcePath: "C:\\MSSQL2019"
