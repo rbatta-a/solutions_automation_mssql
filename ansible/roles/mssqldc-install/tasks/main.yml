@@ -276,7 +276,7 @@
     var: setup_file
     
 - name: Install SQL Server 2019
-  win_command:
+  win_dsc:
     resource_name: setup
     Action: Install
     UpdateEnabled: True
