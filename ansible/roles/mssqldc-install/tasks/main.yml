@@ -307,7 +307,7 @@
     
 - name: Install SQL Server 2019
   win_dsc:
-    resource_name: setup
+    resource_name: setup_file
     Action: Install
     UpdateEnabled: True
     SourcePath: "C:\\MSSQL2019"
