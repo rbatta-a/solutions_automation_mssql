@@ -3,7 +3,7 @@
 
 - name: Copy SQL Server 2019 setup files to C:\
   ansible.windows.win_copy:
-    src: D:\
+    src: D:\MSSQL2019
     dest: C:\
     remote_src: true
 
