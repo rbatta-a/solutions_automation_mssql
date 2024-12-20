@@ -3,15 +3,15 @@
 
 - name: Copy SQL Server 2019 setup files to C:\
   ansible.windows.win_copy:
-    src: /data/testfile.zip
-    dest: C:\testfile.zip
+    src: /data/MSSQL2019.zip
+    dest: C:\MSSQL2019.zip
 
-- name: Unzip MSSQL2019 setup files to C:\
-  ansible.windows.win_unzip:
-    src: C:\testfile.zip
-    dest: C:\MSSQL2019
-    remote_src: yes
-
+- name: Unzip MSSQL2019 setup files using PowerShell
+  ansible.windows.win_shell: |
+    Expand-Archive -Path "C:\MSSQL2019.zip" -DestinationPath "C:\MSSQL2019" -Force
+  args:
+    executable: powershell
+    
 # - name: Initialize additional disks 
 #   win_initialize_disk:
 #     disk_number: "{{ item }}"
