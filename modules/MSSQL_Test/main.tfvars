@@ -8,7 +8,7 @@ vsphere_password = ""
 osguest_id = "windows9Server64Guest"
 internal_domain = "puretec.purestorage.com"
 vmSubnet = "2210"
-dns_servers = ["10.21.210.28"]
+dns_servers = ["10.21.210.98"]
 vm_cluster = "MetroCluster1"
 dc = "SolutionsLab"
 
@@ -17,11 +17,11 @@ vm_gateway = "10.21.210.1"
 
 #vm 
 vm_count = "1"
-vm_name = "sql2022_1"
+vm_name = "sql2022"
 network = "10.21.210.0"
 netmask = "24"
 vm_ip = ["10.21.210.22"]
-vmware_os_template = "windows-server-2022-standard-core-v23.07"
+vmware_os_template = "windows-server-2022-standard-core-v24.12"
 vm_cpus = 8
 vm_memory = 16384
 os_disk_size = "200"
