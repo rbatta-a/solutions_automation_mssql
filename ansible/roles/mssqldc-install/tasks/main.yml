@@ -3,9 +3,8 @@
 
 - name: Copy SQL Server 2019 setup files to C:\
   ansible.windows.win_copy:
-    src: C:\Users\Administrator\Downloads\MSSQL2019
+    src: /data/testfile
     dest: C:\
-    remote_src: true
 
 - name: Initialize additional disks 
   win_initialize_disk:
