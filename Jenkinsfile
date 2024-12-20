@@ -4,7 +4,7 @@ pipeline {
         ansiColor('xterm')
     }
     parameters {
-        choice(choices: ['MySql','MSSQL_Test','MSSQLDC_Test','Postgres', 'Oracle','spark-dev', 'Commvault', 'cyberark3', 'Oracle-demo','k8s', 'Oracle-rac'], description: 'Select the Solution to build', name: 'solution')
+        choice(choices: ['MySql','MSSQL_Test','MSSQLDC_Test','test_example','Postgres', 'Oracle','spark-dev', 'Commvault', 'cyberark3', 'Oracle-demo','k8s', 'Oracle-rac'], description: 'Select the Solution to build', name: 'solution')
         //choice(choices: ['cowriter','MySql','MSSQL', 'MSSQLDC', 'Postgres', 'Oracle','winjump','logrhythm','syslog','qradar','superna','superna-ubuntu','util','k8s', 'Oracle-rac', 'splunk', 'superna-windows','superna-windows2','superna-windows3','superna-windows-19','akriti-ubuntu', 'linux-ubuntu', 'spark', 'cyberark', 'cyberark1', 'cyberark2', 'cyberark3', 'spark-dev', 'veeam-backup-and-replication','cyberark-pvwa', 'veeam'], description: 'Select the Solution to build', name: 'solution')
         string(name: 'count', defaultValue: "0", description: 'Number of VMs')
         choice(choices: ['fsvc', 'shared-vc'], description: 'Select the VC to use', name: 'vcenter')
