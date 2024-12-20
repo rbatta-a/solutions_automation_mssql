@@ -6,9 +6,9 @@
     src: /data/MSSQL2019.zip
     dest: C:\
 
-# - name: Unzip MSSQL2019 setup files using PowerShell
-#   ansible.windows.win_shell: |
-#     powershell.exe -Command "Expand-Archive -Path 'C:\MSSQL2019.zip' -DestinationPath 'C:\MSSQL2019' -Force"
+- name: Unzip MSSQL2019 setup files using PowerShell
+  ansible.windows.win_shell: |
+    powershell.exe -Command "Expand-Archive -Path 'C:\MSSQL2019.zip' -DestinationPath 'C:\MSSQL2019' -Force"
     
 # - name: Initialize additional disks 
 #   win_initialize_disk:
