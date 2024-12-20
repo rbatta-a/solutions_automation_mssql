@@ -28,7 +28,6 @@ variable "data_disk_size" {}
 #variable "data_disk2_size" {}
 variable "datastore_os" {}
 variable "datastore_data" {}
-variable "datastore_data2" {}
 variable "dc" {
   
 }
