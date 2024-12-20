@@ -5,428 +5,428 @@
   ansible.windows.win_copy:
     src: /data/testfile
     dest: C:\
-
-- name: Initialize additional disks 
-  win_initialize_disk:
-    disk_number: "{{ item }}"
-  with_items: 
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-
-
-- name: Powershell mount drives
-  ansible.windows.win_powershell:
-    script: |
-      new-partition -disknumber {{ item }} -usemaximumsize | format-volume -filesystem NTFS -newfilesystemlabel d{{ item }}
-      $Disk = Get-Disk {{ item }}
-      $Partition = Get-Partition -DiskNumber $Disk.Number
-      New-Item -ItemType Directory -Path "C:\Data{{ item }}"
-      $Partition | Add-PartitionAccessPath -AccessPath "C:\Data{{ item }}"
-      New-Item -ItemType Directory -Path "C:\Data{{ item }}\data{{ item }}"
-  with_items: 
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
+---
+# - name: Initialize additional disks 
+#   win_initialize_disk:
+#     disk_number: "{{ item }}"
+#   with_items: 
+#     - 1
+#     - 2
+#     - 3
+#     - 4
+#     - 5
 
 
-# - name: map drive | powershell
+# - name: Powershell mount drives
 #   ansible.windows.win_powershell:
 #     script: |
-#       New-PSDrive -Name 'Z' -PSProvider 'FileSystem' -Root '\\fileserverdb\mssql_backup' -Persist
+#       new-partition -disknumber {{ item }} -usemaximumsize | format-volume -filesystem NTFS -newfilesystemlabel d{{ item }}
+#       $Disk = Get-Disk {{ item }}
+#       $Partition = Get-Partition -DiskNumber $Disk.Number
+#       New-Item -ItemType Directory -Path "C:\Data{{ item }}"
+#       $Partition | Add-PartitionAccessPath -AccessPath "C:\Data{{ item }}"
+#       New-Item -ItemType Directory -Path "C:\Data{{ item }}\data{{ item }}"
+#   with_items: 
+#     - 1
+#     - 2
+#     - 3
+#     - 4
+#     - 5
+
+
+# # - name: map drive | powershell
+# #   ansible.windows.win_powershell:
+# #     script: |
+# #       New-PSDrive -Name 'Z' -PSProvider 'FileSystem' -Root '\\fileserverdb\mssql_backup' -Persist
 
 
 
 
-# Install SQL Server
-#
+# # Install SQL Server
+# #
 
-# Load required powershell modules
+# # Load required powershell modules
 
-# ----------------------
-# - name: Powershell | Temporarily set execution policy to RemoteSigned
-#   ansible.windows.win_shell: |
-#     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-#   args:
-#     executable: powershell
+# # ----------------------
+# # - name: Powershell | Temporarily set execution policy to RemoteSigned
+# #   ansible.windows.win_shell: |
+# #     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+# #   args:
+# #     executable: powershell
     
-# - name: Powershell | Install NuGet provider and trust PSGallery
+# # - name: Powershell | Install NuGet provider and trust PSGallery
+# #   win_psmodule:
+# #     name: NuGet
+# #     state: present
+    
+# # - name: Powershell | Install SqlServer PowerShell module
+# #   win_psmodule:
+# #     name: SqlServer
+# #     state: present
+# #     accept_license: true
+
+# # - name: Powershell | Run script bypassing execution policy
+# #   ansible.windows.win_shell: |
+# #     powershell.exe -ExecutionPolicy Bypass -Command "Write-Host 'Execution Policy Bypassed'"
+
+# - name: Install NuGet provider
+#   win_shell: |
+#     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
+#     Import-PackageProvider -Name NuGet -Force
+#   tags: preinstall_nuget
+  
+# - name: Install PackageManagement module
+#   win_shell: |
+#     Install-Module -Name PackageManagement -Force -Scope CurrentUser
+#   tags: preinstall_packagemanagement
+
+# - name: Install PowerShellGet module
+#   win_shell: |
+#     Install-Module -Name PowerShellGet -Force -Scope CurrentUser
+#   tags: preinstall_powershellget
+
+# - name: Install xSQLServer module
+#   win_shell: |
+#     Install-Module -Name xSQLServer -Force -Scope CurrentUser
+#   tags: install_xsqlserver
+
+# - name: Powershell | Check for SQLServer DSC PowerShell module
+#   win_shell: |
+#     if (!(Get-Module -Name xSQLServer -ListAvailable)) {
+#       Write-Host "xSQLServer module is not installed."
+#     } else {
+#       Write-Host "xSQLServer module is already installed."
+#     }
+#   tags: check_xsqlserver
+
+# - name: Powershell | Check for SQLServer DSC Powershell module
 #   win_psmodule:
-#     name: NuGet
+#     name: SQLServerDsc
 #     state: present
-    
-# - name: Powershell | Install SqlServer PowerShell module
+#     accept_license: true
+
+# - name: Powershell | Check for SqlServer Powershell module
 #   win_psmodule:
 #     name: SqlServer
 #     state: present
 #     accept_license: true
+#     allow_clobber: true
 
-# - name: Powershell | Run script bypassing execution policy
-#   ansible.windows.win_shell: |
-#     powershell.exe -ExecutionPolicy Bypass -Command "Write-Host 'Execution Policy Bypassed'"
+# - name: Powershell | Check for Storage DSC Powershell module
+#   win_psmodule:
+#     name: StorageDsc
+#     state: present
+#     accept_license: true
 
-- name: Install NuGet provider
-  win_shell: |
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
-    Import-PackageProvider -Name NuGet -Force
-  tags: preinstall_nuget
-  
-- name: Install PackageManagement module
-  win_shell: |
-    Install-Module -Name PackageManagement -Force -Scope CurrentUser
-  tags: preinstall_packagemanagement
+# - name: Powershell | Check for ServerManager Powershell module
+#   win_psmodule:
+#     name: ServerManager
+#     state: present
+#     accept_license: true
 
-- name: Install PowerShellGet module
-  win_shell: |
-    Install-Module -Name PowerShellGet -Force -Scope CurrentUser
-  tags: preinstall_powershellget
+# - name: Powershell | Ensure that DBA Tools module is present
+#   win_psmodule:
+#     name: dbatools
+#     state: present
+#     accept_license: true
 
-- name: Install xSQLServer module
-  win_shell: |
-    Install-Module -Name xSQLServer -Force -Scope CurrentUser
-  tags: install_xsqlserver
+# - name: Powershell | Check for xNetworking Powershell module
+#   win_psmodule:
+#     name: xNetworking
+#     state: present
+#     accept_license: true
 
-- name: Powershell | Check for SQLServer DSC PowerShell module
-  win_shell: |
-    if (!(Get-Module -Name xSQLServer -ListAvailable)) {
-      Write-Host "xSQLServer module is not installed."
-    } else {
-      Write-Host "xSQLServer module is already installed."
-    }
-  tags: check_xsqlserver
 
-- name: Powershell | Check for SQLServer DSC Powershell module
-  win_psmodule:
-    name: SQLServerDsc
-    state: present
-    accept_license: true
-
-- name: Powershell | Check for SqlServer Powershell module
-  win_psmodule:
-    name: SqlServer
-    state: present
-    accept_license: true
-    allow_clobber: true
-
-- name: Powershell | Check for Storage DSC Powershell module
-  win_psmodule:
-    name: StorageDsc
-    state: present
-    accept_license: true
-
-- name: Powershell | Check for ServerManager Powershell module
-  win_psmodule:
-    name: ServerManager
-    state: present
-    accept_license: true
-
-- name: Powershell | Ensure that DBA Tools module is present
-  win_psmodule:
-    name: dbatools
-    state: present
-    accept_license: true
-
-- name: Powershell | Check for xNetworking Powershell module
-  win_psmodule:
-    name: xNetworking
-    state: present
-    accept_license: true
+# # - name: Windows | Install .NET Framework Core
+# #   win_feature:
+# #     name: NET-Framework-Core
+# #     state: present
 
 
 # - name: Windows | Install .NET Framework Core
 #   win_feature:
-#     name: NET-Framework-Core
+#     name: Net-Framework-45-Core
 #     state: present
 
-
-- name: Windows | Install .NET Framework Core
-  win_feature:
-    name: Net-Framework-45-Core
-    state: present
-
-# Setup SQL Server Pre-Reqs
-- name: Windows | Install .NET Framework 3.5
-  win_feature:
-    name: NET-Framework-Features
-    state: present
-
-- name: Windows | Install .NET Framework 4.5 Features
-  win_feature:
-    name: NET-Framework-45-Features
-    state: present
-    include_sub_features: True
-
-- name: Windows | Install Windows Process Activation Service
-  win_feature:
-    name: WAS
-    state: present
-    include_sub_features: True
-
-# Setup service accounts
-#
-# We delegate this process to our domain controller since the required AD services are there for
-# win_domain_user to interact with. 
-# - name: Active Directory | Ensure SQL Service account is present
-#   win_domain_user:
-#     name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
-#     firstname: "{{ mssql_instance_name }}"
-#     surname: SQLSvc
-#     password: "{{ mssql_sqlsvc_account_pass }}"
-#     password_never_expires: yes
-#     user_cannot_change_password: yes
-#     description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# # Setup SQL Server Pre-Reqs
+# - name: Windows | Install .NET Framework 3.5
+#   win_feature:
+#     name: NET-Framework-Features
 #     state: present
-#     path: "{{ mssql_base_ldap_path }}"
-#     groups:
-#       - Domain Users
-#     delegate_to: "{{ domain_controller }}"
-#   tags: service_account
 
-# - name: Active Directory | Ensure SQL Agent Service account is present
-#   win_domain_user:
-#     name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
-#     firstname: "{{ mssql_instance_name }}"
-#     surname: AgentSvc
-#     password: "{{ mssql_agentsvc_account_pass }}"
-#     password_never_expires: yes
-#     user_cannot_change_password: yes
-#     description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# - name: Windows | Install .NET Framework 4.5 Features
+#   win_feature:
+#     name: NET-Framework-45-Features
 #     state: present
-#     path: "{{ mssql_base_ldap_path }}"
-#     groups:
-#       - Domain Users
-#     delegate_to: "{{ domain_controller }}"
-#   tags: service_account
+#     include_sub_features: True
 
-# - name: Local | Ensure SQL Service account is present
-#   win_user:
-#     name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
-#     fullname: "{{ mssql_instance_name }}"
-#     password: "{{ mssql_sqlsvc_account_pass }}"
-#     password_never_expires: yes
-#     user_cannot_change_password: yes
-#     description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# - name: Windows | Install Windows Process Activation Service
+#   win_feature:
+#     name: WAS
 #     state: present
-#     groups:
-#       - Users
-#   tags: service_account
+#     include_sub_features: True
 
-# - name: Local | Ensure SQL Agent Service account is present
-#   win_user:
-#     name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
-#     fullname: "{{ mssql_instance_name }}"
-#     password: "{{ mssql_agentsvc_account_pass }}"
-#     password_never_expires: yes
-#     user_cannot_change_password: yes
-#     description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
-#     state: present
-#     groups:
-#       - Users
-#   tags: service_account
+# # Setup service accounts
+# #
+# # We delegate this process to our domain controller since the required AD services are there for
+# # win_domain_user to interact with. 
+# # - name: Active Directory | Ensure SQL Service account is present
+# #   win_domain_user:
+# #     name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
+# #     firstname: "{{ mssql_instance_name }}"
+# #     surname: SQLSvc
+# #     password: "{{ mssql_sqlsvc_account_pass }}"
+# #     password_never_expires: yes
+# #     user_cannot_change_password: yes
+# #     description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# #     state: present
+# #     path: "{{ mssql_base_ldap_path }}"
+# #     groups:
+# #       - Domain Users
+# #     delegate_to: "{{ domain_controller }}"
+# #   tags: service_account
 
-# SQL install may fail if a pending reboot is detected
-# Assuming we are allowed to reboot this step will check for pending reboots
-# and execute a reboot, reboot activity can be controlled using the variable mssql_suppress_reboot
+# # - name: Active Directory | Ensure SQL Agent Service account is present
+# #   win_domain_user:
+# #     name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
+# #     firstname: "{{ mssql_instance_name }}"
+# #     surname: AgentSvc
+# #     password: "{{ mssql_agentsvc_account_pass }}"
+# #     password_never_expires: yes
+# #     user_cannot_change_password: yes
+# #     description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# #     state: present
+# #     path: "{{ mssql_base_ldap_path }}"
+# #     groups:
+# #       - Domain Users
+# #     delegate_to: "{{ domain_controller }}"
+# #   tags: service_account
 
-# --------------------
-# - name: Ensure that a reboot is not pending
-#   when: ansible_reboot_pending
-#   debug:
-#     msg: 'Pending reboot detected'
-#   changed_when: true
-#   notify: reboot windows
+# # - name: Local | Ensure SQL Service account is present
+# #   win_user:
+# #     name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
+# #     fullname: "{{ mssql_instance_name }}"
+# #     password: "{{ mssql_sqlsvc_account_pass }}"
+# #     password_never_expires: yes
+# #     user_cannot_change_password: yes
+# #     description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# #     state: present
+# #     groups:
+# #       - Users
+# #   tags: service_account
 
-# - meta: flush_handlers
-# -------------------
+# # - name: Local | Ensure SQL Agent Service account is present
+# #   win_user:
+# #     name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
+# #     fullname: "{{ mssql_instance_name }}"
+# #     password: "{{ mssql_agentsvc_account_pass }}"
+# #     password_never_expires: yes
+# #     user_cannot_change_password: yes
+# #     description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+# #     state: present
+# #     groups:
+# #       - Users
+# #   tags: service_account
+
+# # SQL install may fail if a pending reboot is detected
+# # Assuming we are allowed to reboot this step will check for pending reboots
+# # and execute a reboot, reboot activity can be controlled using the variable mssql_suppress_reboot
+
+# # --------------------
+# # - name: Ensure that a reboot is not pending
+# #   when: ansible_reboot_pending
+# #   debug:
+# #     msg: 'Pending reboot detected'
+# #   changed_when: true
+# #   notify: reboot windows
+
+# # - meta: flush_handlers
+# # -------------------
 
 
 
 
-# - name: Install SQL Server
-#   win_dsc:
-#     resource_name: SQLSetup
-#     Action: Install
-#     UpdateEnabled: True
-#     SourcePath: "{{ mssql_installation_path }}"
-#     InstanceName: "{{ mssql_instance_name }}"
-#     InstallSharedDir: "{{ mssql_installshared_path }}"
-#     InstallSharedwowDir: "{{ mssql_installsharedwow_path }}"
-#     InstanceDir: "{{ mssql_instance_path }}"
-#     InstallSQLDataDir: "{{ mssql_sqlinstalldata_path }}"
-#     SQLUserDBDir: "{{ mssql_sqluserdata_path }}"
-#     SQLUserDBLogDir: "{{ mssql_sqluserlog_path }}"
-#     SQLTempDBDir: "{{ mssql_sqltempDB_path }}"
-#     SQLTempDBLogDir: "{{ mssql_sqltempDBlog_path }}"
-#     Features: "{{ mssql_features }}"
-#     SQLCollation: "{{ mssql_collation }}"
-#     BrowserSvcStartupType: "{{ mssql_browsersvc_mode }}"
-#     SuppressReboot: "{{ mssql_suppress_reboot }}"
-#     # Service Accounts
-#     #
-#     # If the type of the DSC resource option is a PSCredential then 
-#     # there needs to be 2 options set in the Ansible task definition 
-#     # suffixed with _username and _password. So we will be providing 
-#     # two options for these normally single option items.
+# # - name: Install SQL Server
+# #   win_dsc:
+# #     resource_name: SQLSetup
+# #     Action: Install
+# #     UpdateEnabled: True
+# #     SourcePath: "{{ mssql_installation_path }}"
+# #     InstanceName: "{{ mssql_instance_name }}"
+# #     InstallSharedDir: "{{ mssql_installshared_path }}"
+# #     InstallSharedwowDir: "{{ mssql_installsharedwow_path }}"
+# #     InstanceDir: "{{ mssql_instance_path }}"
+# #     InstallSQLDataDir: "{{ mssql_sqlinstalldata_path }}"
+# #     SQLUserDBDir: "{{ mssql_sqluserdata_path }}"
+# #     SQLUserDBLogDir: "{{ mssql_sqluserlog_path }}"
+# #     SQLTempDBDir: "{{ mssql_sqltempDB_path }}"
+# #     SQLTempDBLogDir: "{{ mssql_sqltempDBlog_path }}"
+# #     Features: "{{ mssql_features }}"
+# #     SQLCollation: "{{ mssql_collation }}"
+# #     BrowserSvcStartupType: "{{ mssql_browsersvc_mode }}"
+# #     SuppressReboot: "{{ mssql_suppress_reboot }}"
+# #     # Service Accounts
+# #     #
+# #     # If the type of the DSC resource option is a PSCredential then 
+# #     # there needs to be 2 options set in the Ansible task definition 
+# #     # suffixed with _username and _password. So we will be providing 
+# #     # two options for these normally single option items.
 
-#     # SQL Service Account
-#     SQLSvcAccount_username: "{{ mssql_sqlsvc_account }}"
-#     SQLSvcAccount_password: "{{ mssql_sqlsvc_account_pass }}"
-#     # SQL Agent Service Account
-#     AgtSvcAccount_username: "{{ mssql_agentsvc_account }}"
-#     AgtSvcAccount_password: "{{ mssql_agentsvc_account_pass }}"
-#     # SQL Analysis Services Account
-#     ASSvcAccount_username: "{{ mssql_assvc_account }}"
-#     ASSvcAccount_password: "{{ mssql_assvc_account_pass }}"
+# #     # SQL Service Account
+# #     SQLSvcAccount_username: "{{ mssql_sqlsvc_account }}"
+# #     SQLSvcAccount_password: "{{ mssql_sqlsvc_account_pass }}"
+# #     # SQL Agent Service Account
+# #     AgtSvcAccount_username: "{{ mssql_agentsvc_account }}"
+# #     AgtSvcAccount_password: "{{ mssql_agentsvc_account_pass }}"
+# #     # SQL Analysis Services Account
+# #     ASSvcAccount_username: "{{ mssql_assvc_account }}"
+# #     ASSvcAccount_password: "{{ mssql_assvc_account_pass }}"
 
-#     # Used when installing on a network path, comment out 
-#     # SourceCredential_username: "{{ ansible_user }}"
-#     # SourceCredential_password: "{{ ansible_password }}"
+# #     # Used when installing on a network path, comment out 
+# #     # SourceCredential_username: "{{ ansible_user }}"
+# #     # SourceCredential_password: "{{ ansible_password }}"
 
-#     # System Admins 
-#     SQLSysAdminAccounts: "{{ mssql_sysadmin_accounts }}"
-#     # Analysis Services Admins (if installed)
-#     ASSysAdminAccounts: "{{ mssql_asadmin_accounts }}"
+# #     # System Admins 
+# #     SQLSysAdminAccounts: "{{ mssql_sysadmin_accounts }}"
+# #     # Analysis Services Admins (if installed)
+# #     ASSysAdminAccounts: "{{ mssql_asadmin_accounts }}"
   
-#     #ProductKey: ""
+# #     #ProductKey: ""
     
-#   tags: install_sql
+# #   tags: install_sql
 
-- name: Check if setup.exe exists
-  win_stat:
-    path: 'C:\\MSSQL2019\\setup.exe'
-  register: setup_file
+# - name: Check if setup.exe exists
+#   win_stat:
+#     path: 'C:\\MSSQL2019\\setup.exe'
+#   register: setup_file
 
-- debug:
-    var: setup_file
-
-- name: Install SQL Server 2019
-  win_command: 'C:\MSSQL2019\setup.exe /QUIET /ACTION=install /UpdateEnabled=False /FEATURES=SQLENGINE,REPLICATION,FULLTEXT /INSTANCENAME=MSSQL2019 /TCPENABLED=1 /SQLSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" /SQLSYSADMINACCOUNTS="Administrator" /AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" /IACCEPTSQLSERVERLICENSETERMS /INSTALLSHAREDDIR="C:\Program Files\Microsoft SQL Server" /INSTANCEDIR="C:\Program Files\Microsoft SQL Server\MSSQL19.MSSQL2019" /SQLTEMPDBDIR="C:\TempDB" /SQLTEMPDBLOGDIR="C:\TempDB\Log" /SQLBACKUPDIR="C:\SQLBackup" /ERRORREPORTING=FALSE'
-  register: sql_install
-
+# - debug:
+#     var: setup_file
 
 # - name: Install SQL Server 2019
-#   win_dsc:
-#     resource_name: setup_file
-#     Action: Install
-#     UpdateEnabled: True
-#     SourcePath: "C:\\MSSQL2019"
-#     InstanceName: "MSSQL2019"
-#     InstallSharedDir: "C:\\Program Files\\Microsoft SQL Server"
-#     InstallSharedwowDir: "C:\\Program Files (x86)\\Microsoft SQL Server"
-#     InstanceDir: "C:\\Program Files\\Microsoft SQL Server\\MSSQL19.MSSQL2019"
-#     InstallSQLDataDir: "C:\\MSSQL2019_Data\\Data"
-#     SQLUserDBDir: "C:\\MSSQL2019_Data\\UserDB"
-#     SQLUserDBLogDir: "C:\\MSSQL2019_Data\\Logs"
-#     SQLTempDBDir: "C:\\TempDB"
-#     SQLTempDBLogDir: "C:\\TempDB\\Log"
-#     SQLBackupDir: "C:\\SQLBackup"
-#     Features: "SQLENGINE,REPLICATION,FULLTEXT"
-#     SQLCollation: "SQL_Latin1_General_CP1_CI_AS"
-#     BrowserSvcStartupType: "Automatic"
-#     SuppressReboot: True
-#     SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
-#     SQLSvcAccount_password: ""
-#     AgtSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
-#     AgtSvcAccount_password: ""
-#     SQLSysAdminAccounts: 
-#       - "Administrator"
-#   tags: install_sql
-# End of win_dsc for SQL Server
+#   win_command: 'C:\MSSQL2019\setup.exe /QUIET /ACTION=install /UpdateEnabled=False /FEATURES=SQLENGINE,REPLICATION,FULLTEXT /INSTANCENAME=MSSQL2019 /TCPENABLED=1 /SQLSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" /SQLSYSADMINACCOUNTS="Administrator" /AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" /IACCEPTSQLSERVERLICENSETERMS /INSTALLSHAREDDIR="C:\Program Files\Microsoft SQL Server" /INSTANCEDIR="C:\Program Files\Microsoft SQL Server\MSSQL19.MSSQL2019" /SQLTEMPDBDIR="C:\TempDB" /SQLTEMPDBLOGDIR="C:\TempDB\Log" /SQLBACKUPDIR="C:\SQLBackup" /ERRORREPORTING=FALSE'
+#   register: sql_install
 
-# Firewall configuration
-# - name: Firewall | Allow Database Engine for instance
+
+# # - name: Install SQL Server 2019
+# #   win_dsc:
+# #     resource_name: setup_file
+# #     Action: Install
+# #     UpdateEnabled: True
+# #     SourcePath: "C:\\MSSQL2019"
+# #     InstanceName: "MSSQL2019"
+# #     InstallSharedDir: "C:\\Program Files\\Microsoft SQL Server"
+# #     InstallSharedwowDir: "C:\\Program Files (x86)\\Microsoft SQL Server"
+# #     InstanceDir: "C:\\Program Files\\Microsoft SQL Server\\MSSQL19.MSSQL2019"
+# #     InstallSQLDataDir: "C:\\MSSQL2019_Data\\Data"
+# #     SQLUserDBDir: "C:\\MSSQL2019_Data\\UserDB"
+# #     SQLUserDBLogDir: "C:\\MSSQL2019_Data\\Logs"
+# #     SQLTempDBDir: "C:\\TempDB"
+# #     SQLTempDBLogDir: "C:\\TempDB\\Log"
+# #     SQLBackupDir: "C:\\SQLBackup"
+# #     Features: "SQLENGINE,REPLICATION,FULLTEXT"
+# #     SQLCollation: "SQL_Latin1_General_CP1_CI_AS"
+# #     BrowserSvcStartupType: "Automatic"
+# #     SuppressReboot: True
+# #     SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
+# #     SQLSvcAccount_password: ""
+# #     AgtSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
+# #     AgtSvcAccount_password: ""
+# #     SQLSysAdminAccounts: 
+# #       - "Administrator"
+# #   tags: install_sql
+# # End of win_dsc for SQL Server
+
+# # Firewall configuration
+# # - name: Firewall | Allow Database Engine for instance
+# #   win_dsc:
+# #     resource_name: xFirewall
+# #     Name: "SQL Server Database Engine instance {{ mssql_instance_name }}"
+# #     Program: sqlservr.exe 
+# #     Ensure: present
+# #     Enabled: True
+# #     Profile: "Domain"
+# #     Direction: "Inbound"
+# #     Action: Allow
+# #     Description: "Allows the Database Engine to access the network"  
+# #   tags: configure_firewall
+
+# # - name: Firewall | Allow SQLBrowser for instance
+# #   win_dsc:
+# #     resource_name: xFirewall
+# #     Name: "SQL Server Browser instance {{ mssql_instance_name }}"
+# #     Service: SQLBrowser
+# #     Ensure: present
+# #     Enabled: True
+# #     Profile: "Domain"
+# #     Direction: "Inbound"
+# #     Action: Allow
+# #     Description: "Allows the SQL Server Browser to access the network"  
+# #   tags: configure_firewall
+
+# # Begin SQL Server configuration
+# # - name: Enable TCP Connectivity
+# #   win_dsc:
+# #     resource_name: SqlProtocolTcpIp
+# #     InstanceName: "{{ mssql_instance_name }}"
+# #     #ProtocolName: TcpIp
+# #     TcpPort: "{{ mssql_port }}"
+# #     IpAddressGroup: IPAll
+# #     Enabled: True
+# #     #RestartService: True
+# #   tags: configure_sql
+
+# # - name: Adjust Max Server Memory to {{ mssql_max_server_memory }}
+# #   when: mssql_max_server_memory is defined
+# #   win_dsc:
+# #     resource_name: SqlConfiguration 
+# #     InstanceName: "{{ mssql_instance_name }}"
+# #     ServerName: "{{ ansible_hostname }}"
+# #     OptionName: max server memory (MB)
+# #     OptionValue: "{{ mssql_max_server_memory }}"
+# #     RestartService: False
+# #   tags: configure_sql
+
+# # - name: Adjust Min Server Memory to {{ mssql_min_server_memory }}
+# #   when: mssql_min_server_memory is defined
+# #   win_dsc:
+# #     resource_name: SqlConfiguration 
+# #     ServerName: "{{ ansible_hostname }}"
+# #     InstanceName: "{{ mssql_instance_name }}"
+# #     OptionName: min server memory (MB)
+# #     OptionValue: "{{ mssql_min_server_memory }}"
+# #   tags: configure_sql
+
+# # - name: Adjust Max Degree of Parallelism
+# #   when: mssql_max_degree_of_parallelism is defined
+# #   win_dsc:
+# #     resource_name: SqlConfiguration 
+# #     ServerName: "{{ ansible_hostname }}"
+# #     InstanceName: "{{ mssql_instance_name }}"
+# #     OptionName: max degree of parallelism
+# #     OptionValue: "{{ mssql_max_degree_of_parallelism }}"
+# #     RestartService: True
+# #   tags: configure_sql
+
+# - name: Configure firewall for SQL Server Database Engine
 #   win_dsc:
 #     resource_name: xFirewall
-#     Name: "SQL Server Database Engine instance {{ mssql_instance_name }}"
-#     Program: sqlservr.exe 
+#     Name: "SQL Server Database Engine"
+#     Program: "sqlservr.exe"
 #     Ensure: present
 #     Enabled: True
 #     Profile: "Domain"
 #     Direction: "Inbound"
 #     Action: Allow
-#     Description: "Allows the Database Engine to access the network"  
+#     Description: "Allows SQL Server Database Engine to access the network"
 #   tags: configure_firewall
 
-# - name: Firewall | Allow SQLBrowser for instance
-#   win_dsc:
-#     resource_name: xFirewall
-#     Name: "SQL Server Browser instance {{ mssql_instance_name }}"
-#     Service: SQLBrowser
-#     Ensure: present
-#     Enabled: True
-#     Profile: "Domain"
-#     Direction: "Inbound"
-#     Action: Allow
-#     Description: "Allows the SQL Server Browser to access the network"  
-#   tags: configure_firewall
-
-# Begin SQL Server configuration
-# - name: Enable TCP Connectivity
+# - name: Enable TCP/IP protocol
 #   win_dsc:
 #     resource_name: SqlProtocolTcpIp
-#     InstanceName: "{{ mssql_instance_name }}"
-#     #ProtocolName: TcpIp
-#     TcpPort: "{{ mssql_port }}"
-#     IpAddressGroup: IPAll
+#     InstanceName: "MSSQL2019"
+#     TcpPort: "1433"
+#     IpAddressGroup: "IPAll"
 #     Enabled: True
-#     #RestartService: True
 #   tags: configure_sql
-
-# - name: Adjust Max Server Memory to {{ mssql_max_server_memory }}
-#   when: mssql_max_server_memory is defined
-#   win_dsc:
-#     resource_name: SqlConfiguration 
-#     InstanceName: "{{ mssql_instance_name }}"
-#     ServerName: "{{ ansible_hostname }}"
-#     OptionName: max server memory (MB)
-#     OptionValue: "{{ mssql_max_server_memory }}"
-#     RestartService: False
-#   tags: configure_sql
-
-# - name: Adjust Min Server Memory to {{ mssql_min_server_memory }}
-#   when: mssql_min_server_memory is defined
-#   win_dsc:
-#     resource_name: SqlConfiguration 
-#     ServerName: "{{ ansible_hostname }}"
-#     InstanceName: "{{ mssql_instance_name }}"
-#     OptionName: min server memory (MB)
-#     OptionValue: "{{ mssql_min_server_memory }}"
-#   tags: configure_sql
-
-# - name: Adjust Max Degree of Parallelism
-#   when: mssql_max_degree_of_parallelism is defined
-#   win_dsc:
-#     resource_name: SqlConfiguration 
-#     ServerName: "{{ ansible_hostname }}"
-#     InstanceName: "{{ mssql_instance_name }}"
-#     OptionName: max degree of parallelism
-#     OptionValue: "{{ mssql_max_degree_of_parallelism }}"
-#     RestartService: True
-#   tags: configure_sql
-
-- name: Configure firewall for SQL Server Database Engine
-  win_dsc:
-    resource_name: xFirewall
-    Name: "SQL Server Database Engine"
-    Program: "sqlservr.exe"
-    Ensure: present
-    Enabled: True
-    Profile: "Domain"
-    Direction: "Inbound"
-    Action: Allow
-    Description: "Allows SQL Server Database Engine to access the network"
-  tags: configure_firewall
-
-- name: Enable TCP/IP protocol
-  win_dsc:
-    resource_name: SqlProtocolTcpIp
-    InstanceName: "MSSQL2019"
-    TcpPort: "1433"
-    IpAddressGroup: "IPAll"
-    Enabled: True
-  tags: configure_sql
 
