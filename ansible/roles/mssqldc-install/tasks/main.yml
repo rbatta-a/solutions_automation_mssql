@@ -4,11 +4,11 @@
 - name: Copy SQL Server 2019 setup files to C:\
   ansible.windows.win_copy:
     src: /data/MSSQL2019.zip
-    dest: C:\MSSQL2019.zip
+    dest: C:\
 
 - name: Unzip MSSQL2019 setup files using PowerShell
   ansible.windows.win_shell: |
-    Expand-Archive -Path "C:\MSSQL2019.zip" -DestinationPath "C:\MSSQL2019" -Force
+    Expand-Archive -Path "C:\MSSQL2019.zip" -DestinationPath "C:\" -Force
   args:
     executable: powershell
     
