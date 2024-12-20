@@ -23,5 +23,6 @@ module "vm" {
     winadminpass                     = var.winadminpass
     contentlib_name                  = var.contentlib_name
     ansible_key                      = var.ansible_key
+    vm_folder                        = var.vm_folder
 
 }
