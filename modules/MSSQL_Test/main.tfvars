@@ -8,7 +8,7 @@ vsphere_password = ""
 osguest_id = "windows9Server64Guest"
 internal_domain = "puretec.purestorage.com"
 vmSubnet = "2210"
-dns_servers = ["10.21.210.28"]
+dns_servers = ["10.21.210.98"]
 vm_cluster = "MetroCluster1"
 dc = "SolutionsLab"
 
@@ -17,24 +17,20 @@ vm_gateway = "10.21.210.1"
 
 #vm 
 vm_count = "1"
-vm_name = "sql2022_1"
+vm_name = "MSSQL_Test"
 network = "10.21.210.0"
 netmask = "24"
 vm_ip = ["10.21.210.22"]
 vmware_os_template = "windows-server-2022-standard-core-v24.12"
-vm_cpus = 8
+vm_cpus = 16
 vm_memory = 16384
-os_disk_size = "200"
-data_disk_size = "1024"
-datastore_os = "vvOLs-Metro"
-datastore_data = "vvOLs-Metro"
-datastore_data2 = "vvOLs-Metro"
-#These below are the original aspects present and we added from the MSSQLDC  the above datastaore_os and datastore_data
-#datastore_os = "Metro_Cluster1_Prod01"
-#datastore_data = "sql-sizer-data"
-#datastore_data2 = "sql-sizer-log"
+os_disk_size = "100"
+data_disk_size = "500"
+datastore_os = "Metro_Cluster1_Prod01"
+datastore_data = "Metro_Cluster1_Prod01"
 winadminpass = "VMware1!"
 contentlib_name = "SolutionsLab-ContentLib"
+vm_folder = "Unni-VMs"
 
 
 
