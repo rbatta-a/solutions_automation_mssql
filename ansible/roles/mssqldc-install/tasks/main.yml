@@ -5,7 +5,7 @@
   ansible.windows.win_copy:
     src: /data/testfile
     dest: C:\
----
+
 # - name: Initialize additional disks 
 #   win_initialize_disk:
 #     disk_number: "{{ item }}"
