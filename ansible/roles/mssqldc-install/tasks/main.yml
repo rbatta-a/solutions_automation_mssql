@@ -21,6 +21,14 @@
     patterns: '*.iso'
     file_type: file
   register: iso_find
+
+- name: Windows | Mount ISO image of SQL Server
+  win_disk_image:
+    image_path: '{{ iso_find.files[0].path }}'
+    state: present
+  register: mount_info
+  changed_when: false
+  
 # - name: Copy SQL Server 2019 setup files to C:\
 #   ansible.windows.win_copy:
 #     src: /data/SQL2019-SSEI-Eval.exe
