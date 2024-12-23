@@ -70,12 +70,6 @@
 #
 
 # Load required powershell modules
-
-- name: Install SqlServerDsc PowerShell module
-  win_shell: |
-    Install-Module -Name SqlServerDsc -Force -Scope CurrentUser
-  args:
-    executable: powershell
     
 - name: Install NuGet provider
   win_shell: |
@@ -97,7 +91,12 @@
   win_shell: |
     Install-Module -Name xSQLServer -Force -Scope CurrentUser
   tags: install_xsqlserver
-
+  
+- name: Install SqlServerDsc PowerShell module
+  win_shell: |
+    Install-Module -Name SqlServerDsc -Force -Scope CurrentUser
+  args:
+    executable: powershell
 - name: Powershell | Check for SQLServer DSC PowerShell module
   win_shell: |
     if (!(Get-Module -Name xSQLServer -ListAvailable)) {
