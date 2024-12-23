@@ -37,10 +37,10 @@
 
 - name: Windows | Install SQL Server
   win_dsc:
-    resource_name: SqlSetup
+    resource_name: setup.exe
     Action: Install
     InstanceName: MSSQL2019
-    SourcePath: '{{ mount_info.mount_paths[0] }}'
+    SourcePath: D:\
     Features: SQLENGINE,REPLICATION,FULLTEXT
     SQLSysAdminAccounts: BUILTIN\Administrators
     SQLUserDBDir: C:\MSSQL\Data
