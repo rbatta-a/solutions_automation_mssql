@@ -1,29 +1,25 @@
 
 ---
-- name: Copy SQL setup executable to target machine
+- name: Windows | Install .NET Framework 4.5 Core
+  win_feature:
+    name: NET-Framework-45-Core
+    state: present
+    include_sub_features: True
+
+- name: Windows | Install DSC resource (SqlServerDsc)
+  win_psmodule:
+    name: SQLServerDsc
+    state: present
+
+- name: Windows | Create directory structure
+  win_file:
+    path: C:\mssql_2019_setup
+    state: directory
+
+- name: Windows | Copy SQL Media Downloader to target machine
   win_copy:
     src: /data/SQL2019-SSEI-Eval.exe
-    dest: C:\mssql_2019_setup\SQL2019-SSEI-Eval.exe
-
-- name: Execute the SQL setup executable to extract files
-  win_command: |
-    C:\mssql_2019_setup\SQL2019-SSEI-Eval.exe /quiet /action=Download/ENU /MediaPath=C:\mssql_2019_setup\media /MediaType=ISO
-  args:
-    creates: C:\mssql_2019_setup\media
-
-- name: Find ISO file in downloaded media
-  win_find:
-     paths: C:\mssql_2019_setup\media
-    patterns: '*.iso'
-    file_type: file
-  register: iso_find
-
-- name: Mount ISO image
-  win_disk_image:
-    image_path: "{{ iso_find.files[0].path }}"
-    state: present
-  register: mount_info
-  changed_when: false
+    dest: C:\mssql_2019_setup\sql2019-setup.exe
 
 
 # - name: Copy SQL Server 2019 setup files to C:\
