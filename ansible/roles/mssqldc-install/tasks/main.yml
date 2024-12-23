@@ -4,7 +4,7 @@
 - name: Windows | Copy SQL Media Downloader to target machine
   win_copy:
     src: /data/SQL2019-SSEI-Eval.exe
-    dest: C:\mssql_2019_setup\sql2019-setup.exe
+    dest: C:\
 
 
 # - name: Copy SQL Server 2019 setup files to C:\
