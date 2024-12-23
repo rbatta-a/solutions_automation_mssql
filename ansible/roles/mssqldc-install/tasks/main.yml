@@ -5,7 +5,10 @@
   win_copy:
     src: /data/SQL2019-SSEI-Eval.exe
     dest: C:\
-
+- name: Windows | Download install media
+  win_command: C:\SQL2019-SSEI-Eval.exe /ENU /Action=Download /HideProgressBar /MediaPath=D:\ /MediaType=ISO  /Quiet
+  args:
+    creates: D:\
 
 # - name: Copy SQL Server 2019 setup files to C:\
 #   ansible.windows.win_copy:
