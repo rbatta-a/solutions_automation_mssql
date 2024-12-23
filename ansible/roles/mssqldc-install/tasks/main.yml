@@ -1,9 +1,10 @@
 
 ---
-- name: Windows | Install DSC resource (SqlServerDsc)
-  win_psmodule:
-    name: SQLServerDsc
-    state: present
+- name: Install SqlServerDsc PowerShell module
+  win_shell: |
+    Install-Module -Name SqlServerDsc -Force -Scope CurrentUser
+  args:
+    executable: powershell
     
 - name: Windows | Create MediaPath directory
   win_file:
