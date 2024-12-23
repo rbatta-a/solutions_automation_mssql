@@ -1,20 +1,5 @@
 
 ---
-- name: Windows | Install .NET Framework 4.5 Core
-  win_feature:
-    name: NET-Framework-45-Core
-    state: present
-    include_sub_features: True
-
-- name: Windows | Install DSC resource (SqlServerDsc)
-  win_psmodule:
-    name: SQLServerDsc
-    state: present
-
-- name: Windows | Create directory structure
-  win_file:
-    path: C:\mssql_2019_setup
-    state: directory
 
 - name: Windows | Copy SQL Media Downloader to target machine
   win_copy:
