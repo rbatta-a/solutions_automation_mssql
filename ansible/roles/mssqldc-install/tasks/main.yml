@@ -1,5 +1,10 @@
 
 ---
+- name: Windows | Install DSC resource (SqlServerDsc)
+  win_psmodule:
+    name: SQLServerDsc
+    state: present
+    
 - name: Windows | Create MediaPath directory
   win_file:
     path: C:\mssql_2019_setup
