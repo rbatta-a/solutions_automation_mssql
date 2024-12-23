@@ -37,7 +37,7 @@
 
 - name: Windows | Install SQL Server
   win_dsc:
-    resource_name: setup
+    resource_name: SqlSetup
     Action: Install
     InstanceName: MSSQL2019
     SourcePath: '{{ mount_info.mount_paths[0] }}'
