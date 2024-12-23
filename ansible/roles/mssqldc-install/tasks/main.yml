@@ -240,14 +240,14 @@
 # and execute a reboot, reboot activity can be controlled using the variable mssql_suppress_reboot
 
 
-- name: Ensure that a reboot is not pending
-  when: ansible_reboot_pending
-  debug:
-    msg: 'Pending reboot detected'
-  changed_when: true
-  notify: reboot windows
+# - name: Ensure that a reboot is not pending
+#   when: ansible_reboot_pending
+#   debug:
+#     msg: 'Pending reboot detected'
+#   changed_when: true
+#   notify: reboot windows
 
-- meta: flush_handlers
+# - meta: flush_handlers
 
 
 # - name: Install SQL Server
