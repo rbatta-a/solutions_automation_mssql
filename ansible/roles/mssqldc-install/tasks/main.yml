@@ -1,11 +1,6 @@
 
 ---
-- name: Install SqlServerDsc PowerShell module
-  win_shell: |
-    Install-Module -Name SqlServerDsc -Force -Scope CurrentUser
-  args:
-    executable: powershell
-    
+
 - name: Windows | Create MediaPath directory
   win_file:
     path: C:\mssql_2019_setup
@@ -76,6 +71,12 @@
 
 # Load required powershell modules
 
+- name: Install SqlServerDsc PowerShell module
+  win_shell: |
+    Install-Module -Name SqlServerDsc -Force -Scope CurrentUser
+  args:
+    executable: powershell
+    
 - name: Install NuGet provider
   win_shell: |
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
