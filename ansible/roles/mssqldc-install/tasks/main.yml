@@ -1,14 +1,18 @@
 
 ---
-
+- name: Windows | Create MediaPath directory
+  win_file:
+    path: C:\mssql_2019_setup
+    state: directory
+    
 - name: Windows | Copy SQL Media Downloader to target machine
   win_copy:
     src: /data/SQL2019-SSEI-Eval.exe
     dest: C:\
 - name: Windows | Download install media
-  win_command: C:\SQL2019-SSEI-Eval.exe /ENU /Action=Download /HideProgressBar /MediaPath=D:\ /MediaType=ISO  /Quiet
+  win_command: C:\SQL2019-SSEI-Eval.exe /ENU /Action=Download /HideProgressBar /MediaPath=C:\mssql_2019_setup\media /MediaType=ISO  /Quiet
   args:
-    creates: D:\
+    creates: C:\mssql_2019_setup\media
 
 # - name: Copy SQL Server 2019 setup files to C:\
 #   ansible.windows.win_copy:
