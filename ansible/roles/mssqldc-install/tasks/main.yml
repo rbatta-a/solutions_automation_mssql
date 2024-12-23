@@ -41,11 +41,7 @@
     Action: Install
     InstanceName: MSSQL2019
     SourcePath: '{{ mount_info.mount_paths[0] }}'
-    Features: SQLENGINE,REPLICATION,FULLTEXT 
-    UpdateEnabled: False
-    InstallSharedDir: C:\Program Files\Microsoft SQL Server
-    InstallSharedwowDir: C:\Program Files (x86)\Microsoft SQL Server
-    InstanceDir: C:\Program Files\Microsoft SQL Server
+    Features: SQLENGINE,REPLICATION,FULLTEXT
     SQLSysAdminAccounts: BUILTIN\Administrators
     SQLUserDBDir: C:\MSSQL\Data
     SQLUserDBLogDir: C:\MSSQL\DataLogs
@@ -53,9 +49,7 @@
     SQLTempDBLogDir: C:\MSSQL\TempDBLogs
     SQLBackupDir: C:\MSSQL\Backup
     SqlSvcStartupType: Automatic
-    AgtSvcStartupType: Manual
-    AsSvcStartupType: Manual
-    BrowserSvcStartupType: Manual
+  register: sql_setup
   
 # - name: Copy SQL Server 2019 setup files to C:\
 #   ansible.windows.win_copy:
