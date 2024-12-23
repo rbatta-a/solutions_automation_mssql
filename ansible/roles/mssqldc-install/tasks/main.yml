@@ -411,25 +411,25 @@
 #     RestartService: True
 #   tags: configure_sql
 
-- name: Configure firewall for SQL Server Database Engine
-  win_dsc:
-    resource_name: xFirewall
-    Name: "SQL Server Database Engine"
-    Program: "sqlservr.exe"
-    Ensure: present
-    Enabled: True
-    Profile: "Domain"
-    Direction: "Inbound"
-    Action: Allow
-    Description: "Allows SQL Server Database Engine to access the network"
-  tags: configure_firewall
+# - name: Configure firewall for SQL Server Database Engine
+#   win_dsc:
+#     resource_name: xFirewall
+#     Name: "SQL Server Database Engine"
+#     Program: "sqlservr.exe"
+#     Ensure: present
+#     Enabled: True
+#     Profile: "Domain"
+#     Direction: "Inbound"
+#     Action: Allow
+#     Description: "Allows SQL Server Database Engine to access the network"
+#   tags: configure_firewall
 
-- name: Enable TCP/IP protocol
-  win_dsc:
-    resource_name: SqlProtocolTcpIp
-    InstanceName: "MSSQL2019"
-    TcpPort: "1433"
-    IpAddressGroup: "IPAll"
-    Enabled: True
-  tags: configure_sql
+# - name: Enable TCP/IP protocol
+#   win_dsc:
+#     resource_name: SqlProtocolTcpIp
+#     InstanceName: "MSSQL2019"
+#     TcpPort: "1433"
+#     IpAddressGroup: "IPAll"
+#     Enabled: True
+#   tags: configure_sql
 
