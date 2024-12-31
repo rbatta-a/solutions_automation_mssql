@@ -43,6 +43,13 @@
 
 # Load required powershell modules
 
+- name: Install PSGallery from role
+  ansible.builtin.include_role:
+    name: trippsc2.windows.install_psgallery
+  tags:
+    - always
+    - molecule-idempotence-notest
+    
 - name: Install NuGet provider
   win_shell: |
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
