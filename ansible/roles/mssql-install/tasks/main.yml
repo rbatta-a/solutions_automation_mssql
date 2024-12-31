@@ -327,72 +327,7 @@
   tags: install_sql
 
 # End of win_dsc for SQL Server
-- name: Firewall | Allow Database Engine for instance
-  win_dsc:
-    resource_name: xFirewall
-    Name: "SQL Server Database Engine instance {{ mssql_instance_name }}"
-    Program: sqlservr.exe
-    Ensure: present
-    Enabled: True
-    Profile: "Domain"
-    Direction: "Inbound"
-    Action: Allow
-    Description: "Allows the Database Engine to access the network"
-# Firewall Configuration for SQL Server Browser
-- name: Firewall | Allow SQLBrowser for instance
-  win_dsc:
-    resource_name: xFirewall
-    Name: "SQL Server Browser instance {{ mssql_instance_name }}"
-    Service: SQLBrowser
-    Ensure: present
-    Enabled: True
-    Profile: "Domain"
-    Direction: "Inbound"
-    Action: Allow
-    Description: "Allows the SQL Server Browser to access the network"
-  tags: configure_firewall
-  
-- name: Enable TCP Connectivity
-  win_dsc:
-    resource_name: SqlProtocolTcpIp
-    InstanceName: "{{ mssql_instance_name }}"
-    TcpPort: "{{ mssql_port }}"
-    IpAddressGroup: IPAll
-    Enabled: True
-  tags: configure_sql
 
-- name: Adjust Max Server Memory to {{ mssql_max_server_memory }}
-  when: mssql_max_server_memory is defined
-  win_dsc:
-    resource_name: SqlConfiguration
-    InstanceName: "{{ mssql_instance_name }}"
-    ServerName: "{{ ansible_hostname }}"
-    OptionName: max server memory (MB)
-    OptionValue: "{{ mssql_max_server_memory }}"
-    RestartService: False
-  tags: configure_sql
-
-- name: Adjust Min Server Memory to {{ mssql_min_server_memory }}
-  when: mssql_min_server_memory is defined
-  win_dsc:
-    resource_name: SqlConfiguration
-    ServerName: "{{ ansible_hostname }}"
-    InstanceName: "{{ mssql_instance_name }}"
-    OptionName: min server memory (MB)
-    OptionValue: "{{ mssql_min_server_memory }}"
-  tags: configure_sql
-
-- name: Adjust Max Degree of Parallelism
-  when: mssql_max_degree_of_parallelism is defined
-  win_dsc:
-    resource_name: SqlConfiguration
-    ServerName: "{{ ansible_hostname }}"
-    InstanceName: "{{ mssql_instance_name }}"
-    OptionName: max degree of parallelism
-    OptionValue: "{{ mssql_max_degree_of_parallelism }}"
-    RestartService: True
-  tags: configure_sql
-  
 # # Firewall configuration
 # - name: Firewall | Allow Database Engine for instance
 #   win_dsc:
