@@ -83,10 +83,11 @@
     name: SQLServerDsc
     state: present
 
-- name: Powershell | Check for SqlServer Powershell module
-  win_psmodule:
-    name: SqlServer
-    state: present
+- name: Install SqlServer PowerShell Module
+  ansible.builtin.win_shell: |
+    Install-Module -Name SqlServer -Force -Scope CurrentUser
+  args:
+    executable: PowerShell
 
 - name: Powershell | Check for Storage DSC Powershell module
   win_psmodule:
