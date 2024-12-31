@@ -289,7 +289,7 @@
 
 - name: Check if setup.exe exists
   win_stat:
-    path: 'D:\'
+    path: 'D:\\setup.exe'
   register: setup_file
 
 - debug:
@@ -300,7 +300,7 @@
 #     resource_name: SQLSetup
 #     Action: Install
 #     UpdateEnabled: True
-#     SourcePath: D:\
+#     SourcePath: D:\setup.exe
 #     InstanceName: "{{ mssql_instance_name }}"
 #     InstallSharedDir: "{{ mssql_installshared_path }}"
 #     InstallSharedwowDir: "{{ mssql_installsharedwow_path }}"
