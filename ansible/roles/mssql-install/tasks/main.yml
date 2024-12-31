@@ -12,7 +12,7 @@
     dest: C:\
     
 - name: Windows | Download install media
-  win_command: C:\SQL2019-SSEI-Eval.exe /ENU /Action=Download /HideProgressBar /MediaPath=C:\mssql_2019_setup\media /MediaType=ISO  /Quiet
+  win_command: C:\SQL2019-SSEI-Eval.exe /ENU /Action=Download /HideProgressBar /MediaPath=C:\InstallMedia\SQLServer\media /MediaType=ISO  /Quiet
   args:
     creates: C:\InstallMedia\SQLServer\media
     
