@@ -3,7 +3,7 @@
 
 - name: Windows | Create MediaPath directory
   win_file:
-    path: CC:\InstallMedia\SQLServer
+    path: C:\InstallMedia\SQLServer
     state: directory
     
 - name: Windows | Copy SQL Media Downloader to target machine
