@@ -42,6 +42,42 @@
 #
 
 # Load required powershell modules
+
+- name: Install NuGet provider
+  win_shell: |
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser
+    Import-PackageProvider -Name NuGet -Force
+  tags: preinstall_nuget
+  
+- name: Install PackageManagement module
+  win_shell: |
+    Install-Module -Name PackageManagement -Force -Scope CurrentUser
+  tags: preinstall_packagemanagement
+
+- name: Install PowerShellGet module
+  win_shell: |
+    Install-Module -Name PowerShellGet -Force -Scope CurrentUser
+  tags: preinstall_powershellget
+
+- name: Install xSQLServer module
+  win_shell: |
+    Install-Module -Name xSQLServer -Force -Scope CurrentUser
+  tags: install_xsqlserver
+  
+- name: Install SqlServerDsc PowerShell module
+  win_shell: |
+    Install-Module -Name SqlServerDsc -Force -Scope CurrentUser
+  args:
+    executable: powershell
+- name: Powershell | Check for SQLServer DSC PowerShell module
+  win_shell: |
+    if (!(Get-Module -Name xSQLServer -ListAvailable)) {
+      Write-Host "xSQLServer module is not installed."
+    } else {
+      Write-Host "xSQLServer module is already installed."
+    }
+  tags: check_xsqlserver
+
 - name: Powershell | Check for SQLServer DSC Powershell module
   win_psmodule:
     name: SQLServerDsc
