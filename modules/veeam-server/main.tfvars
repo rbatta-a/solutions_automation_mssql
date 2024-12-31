@@ -16,12 +16,12 @@ vm_gateway = "10.21.210.1"
 
 
 #vm 
-vm_count = "3"
-vm_name = "veeam-server"
+vm_count = "1"
+vm_name = "veeam-auto-server"
 network = "10.21.210.0"
 netmask = "24"
 vm_ip = ["10.21.210.22"]
-vmware_os_template = "windows-server-2022-standard-core-v23.07"
+vmware_os_template = "windows-server-2022-standard-core-v24.12"
 vm_cpus = 16
 vm_memory = 16384
 os_disk_size = "100"

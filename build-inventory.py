@@ -22,44 +22,14 @@ print(filename)
 print(sol)
 # check if  the solution is windows
 # prepare the hosts.ini with more details to login 
-if sol in ('MSSQLDC_Test','MSSQL_Test'):
-    print(sol)
-    with open(filename,'w') as fh:
-        fh.write("[win]\n")
-        for name in names:
-            # fh.write(name.rstrip().split('.')[0]+ '.lab.local' + '\n')
-            fh.write(name.rstrip().split('.')[0]+ '.puretec.purestorage.com' + '\n')
-        fh.write("[win:vars]\n")
-        fh.write("ansible_user=administrator\n")
-        fh.write("ansible_password=VMware1!\n")
-        # fh.write("ansible_user=vidm@FSLAB.LOCAL\n")
-        # fh.write("ansible_password=Osmium76$\n")
-        fh.write("ansible_connection=winrm\n")
-        fh.write("ansible_winrm_server_cert_validation=ignore\n")
-        fh.write("ansible_port=5985\n")
-        fh.write("ansible_winrm_scheme=http\n")
-        # fh.write("ansible_winrm_kerberos_delegation=true\n")
-        # fh.write("ansible_winrm_transport=kerberos\n")
-        
-else:
-    with open(filename,'w') as fh:
-        for ip in ips:
-            fh.write(ip.rstrip() + '\n')
-
-    with open(var_filename,'w') as fh:
-        fh.write('hg:' + '\n')
-        for ip in ips:
-            fh.write(' - ' + ip.rstrip() + '\n')
-
-
-#os.chdir(os.path.join(os.getcwd(), '..', '..', 'ansible')) 
-# These files needs to be checked in so that the hardcoded lines can be removed in future.
-
-direct_asm_path = '/root/COPY_OF_ORACLE_BUILD/ansible'
-os.chdir(direct_asm_path)
+"""
+this below section logic is purely for Veeam values passing to the hosts and works for Veeam alone.
+"""
+direct_veeam_path =  '/vijayveeam/racsetup_copy/ansible'
+os.chdir(direct_veeam_path)
 print(os.getcwd())
 
-def append_ip_to_hosts(ip_addresses, hosts_file= os.getcwd() + '/inventory-asm-demo/hosts.yml'):
+def append_ip_to_hosts_in_veeam_linux_server(ip_addresses=ips, hosts_file= os.getcwd() + '/veeam-asm/hosts.yml'):
     '''
     This method will remove the old hosts.yml file (if it exists) and create a new one with the provided IP addresses.
     '''
@@ -87,13 +57,50 @@ def append_ip_to_hosts(ip_addresses, hosts_file= os.getcwd() + '/inventory-asm-d
         file.write('---\n')  # Add the YAML document start marker
         yaml.dump(hosts_data, file, default_flow_style=False)
 
+'''
+The abopve Veeam setup is done 
+'''
+
+
+if sol == 'veeam-linux-servers':
+    append_ip_to_hosts_in_veeam_linux_server(ip_addresses=ips)
+if sol == 'MSSQL': #or 'MSSQLDC':
+    print(sol)
+    with open(filename,'w') as fh:
+        fh.write("[win]\n")
+        for name in names:
+            fh.write(name.rstrip().split('.')[0]+ '.fslab.local' + '\n')
+        fh.write("[win:vars]\n")
+        # fh.write("ansible_user=administrator\n")
+        # fh.write("ansible_password=VMware1!\n")
+        fh.write("ansible_user=vidm@FSLAB.LOCAL\n")
+        fh.write("ansible_password=Osmium76$\n")
+        fh.write("ansible_connection=winrm\n")
+        fh.write("ansible_winrm_server_cert_validation=ignore\n")
+        fh.write("ansible_port=5985\n")
+        fh.write("ansible_winrm_scheme=http\n")
+        fh.write("ansible_winrm_kerberos_delegation=true\n")
+        fh.write("ansible_winrm_transport=kerberos\n")
+        
+else:
+    with open(filename,'w') as fh:
+        for ip in ips:
+            fh.write(ip.rstrip() + '\n')
+
+    with open(var_filename,'w') as fh:
+        fh.write('hg:' + '\n')
+        for ip in ips:
+            fh.write(' - ' + ip.rstrip() + '\n')
+
 
 #os.chdir(os.path.join(os.getcwd(), '..', '..', 'ansible')) 
 # These files needs to be checked in so that the hardcoded lines can be removed in future.
 
+
 direct_asm_path = '/root/COPY_OF_ORACLE_BUILD/ansible'
 os.chdir(direct_asm_path)
 print(os.getcwd())
+
 
 def append_ip_to_hosts(ip_addresses, hosts_file= os.getcwd() + '/inventory-asm-demo/hosts.yml'):
     '''

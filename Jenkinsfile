@@ -4,8 +4,8 @@ pipeline {
         ansiColor('xterm')
     }
     parameters {
-        choice(choices: ['MySql','MSSQL_Test','MSSQLDC_Test','example_test','Postgres', 'Oracle','spark-dev', 'Commvault', 'cyberark3', 'Oracle-demo','k8s', 'Oracle-rac'], description: 'Select the Solution to build', name: 'solution')
-        //choice(choices: ['cowriter','MySql','MSSQL', 'MSSQLDC', 'Postgres', 'Oracle','winjump','logrhythm','syslog','qradar','superna','superna-ubuntu','util','k8s', 'Oracle-rac', 'splunk', 'superna-windows','superna-windows2','superna-windows3','superna-windows-19','akriti-ubuntu', 'linux-ubuntu', 'spark', 'cyberark', 'cyberark1', 'cyberark2', 'cyberark3', 'spark-dev', 'veeam-backup-and-replication','cyberark-pvwa', 'veeam'], description: 'Select the Solution to build', name: 'solution')
+        choice(choices: ['MySql','MSSQL', 'Postgres', 'Oracle','spark-dev', 'Commvault', 'cyberark3', 'Oracle-demo','k8s', 'Oracle-rac', 'keerthi-ubuntu', 'data'], description: 'Select the Solution to build', name: 'solution')
+        //choice(choices: ['cowriter','MySql','MSSQL', 'MSSQLDC', 'Postgres', 'Oracle','winjump','logrhythm','syslog','qradar','superna','superna-ubuntu', 'keerthi-ubuntu', 'util','k8s', 'Oracle-rac', 'splunk', 'superna-windows','superna-windows2','superna-windows3','superna-windows-19','akriti-ubuntu', 'linux-ubuntu', 'spark', 'cyberark', 'cyberark1', 'cyberark2', 'cyberark3', 'spark-dev', 'veeam-backup-and-replication','cyberark-pvwa', 'veeam'], description: 'Select the Solution to build', name: 'solution')
         string(name: 'count', defaultValue: "0", description: 'Number of VMs')
         choice(choices: ['fsvc', 'shared-vc'], description: 'Select the VC to use', name: 'vcenter')
         booleanParam(name: 'Build', defaultValue: false, description: 'Build Intrastructure')
@@ -186,7 +186,17 @@ pipeline {
  		  * Install Veeam Ansible Collection
 		  */
                   sh script: "ansible-galaxy collection install veeamhub.veeam"
+		  // ISCSI MAPPINGS AND MULTIPATH ENABLED FOR THE LINUX SERVERS
+		  sh script: "cd /vijayveeam/racsetup_copy/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i veeam-asm -e hostgroup=dbfs  playbooks/veeam_iscsi_setup.yml  --private-key "  + '${SSH_KEY}' + " --user ansible  -v"	
+		  // Joining FA to Domain	
+                  //sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-fa-domain.yml"
 
+		  // Creating FS and Exports on FA 	
+                  //sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-fa-nfs-export.yml"
+
+		  // Joining Windows to Domain	
+                  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-win-domain.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'"
+			
 		  // Install Veeam setup 
                   sh script: "cat ${VEEAM_SERV_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-server] > inventory.ini"
@@ -210,15 +220,14 @@ pipeline {
                	  sh script: 'echo "windows_repo_server ansible_host=`head -n 2 ${VEEAM_WINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-windows-repo-server-add.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
-
-
+			
                   // Linux Repo Server
                   sh script: "cat ${VEEAM_LINSERVS_WSDIR}/hosts.ini" 
                	  sh script: "echo [veeam-linux-repo-server] >> inventory.ini"
                	  sh script: 'echo -n "linux_repo_server ansible_host=`head -n 1 ${VEEAM_LINSERVS_WSDIR}/hosts.ini | tail -n 1 `" >> inventory.ini'
                   sh script: "cat inventory.ini"
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-linux-repo-server-add.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
-
+			
 		  // Add NFS Share 
                	  sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-nfs-share.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 
 
@@ -266,8 +275,9 @@ pipeline {
                	  	 sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-nfs-share-backup-job.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'"
 			 sh script: "ansible-playbook -i inventory.ini ../../ansible/playbooks/" +  "veeam-nfs-restore.yml" + " -e 'ansible_user=Administrator ansible_password=${WINDOWS_ADMIN_PASS} ansible_connection=winrm ansible_shell_type=cmd ansible_port=5985 ansible_winrm_transport=ntlm ansible_winrm_server_cert_validation=ignore ansible_winrm_scheme=http ansible_winrm_kerberos_delegation=true'" 	
 			}
-		} else { 	
-	          sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/does_tool_loadgen.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
+		} else { 
+	          sh script: "cd /root/racsetup_copy/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-rac -e hostgroup=dbfs playbooks/does_tool_loadgen.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
+	          // sh script: "cd /root/COPY_OF_ORACLE_BUILD/ansible; export ANSIBLE_COLLECTIONS_PATHS=/root/.ansible/collections; export ANSIBLE_ROLES_PATH=/root/.ansible/collections/ansible_collections/opitzconsulting/ansible_oracle/roles; export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3.6; ansible-playbook -i inventory-asm-demo -e hostgroup=dbfs playbooks/does_tool_loadgen.yml --private-key "  + '${SSH_KEY}' + " --user ansible  -v"
                  // sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" + solname.toLowerCase() + "-test.yml --private-key "  + '${SSH_KEY}' + " --user ansible
               }
         }

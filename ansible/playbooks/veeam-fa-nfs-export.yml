@@ -1,0 +1,56 @@
+- name: Flash array file system export module
+  hosts: localhost
+  vars_files:
+    - "../vars/common.yml"
+  gather_facts: yes
+  tasks:
+  ## Verify file system export creation
+  - name: Create a file system
+    purestorage.flasharray.purefa_fs:
+      name: "{{ veeam.fs_name }}"
+      fa_url: "{{ veeam.fa_url }}"
+      api_token: "{{ veeam.fa_api_token }}"
+      state: present
+    ignore_errors: true
+  - name: Create a directory file system
+    purestorage.flasharray.purefa_directory:
+      name: "{{ veeam.fs_dir_name }}"
+      filesystem: "{{ veeam.fs_name }}"
+      path: "{{ veeam.fs_dir_path }}"
+      fa_url: "{{ veeam.fa_url }}"
+      api_token: "{{ veeam.fa_api_token }}"
+      state: present
+    ignore_errors: true
+  - name: Create a nfs policy
+    purestorage.flasharray.purefa_policy:
+      name: "{{ veeam.nfs_policy_name }}"
+      policy: "nfs"
+      nfs_access: "{{ veeam.nfs_access }}"
+      nfs_permission: "{{ veeam.nfs_permission }}"
+      client: "{{ veeam.nfs_client }}"
+      fa_url: "{{ veeam.fa_url }}"
+      api_token: "{{ veeam.fa_api_token }}"
+      state: present
+    ignore_errors: true
+  - name: Create a smb policy
+    purestorage.flasharray.purefa_policy:
+      name: "{{ veeam.smb_policy_name }}"
+      policy: "smb"
+      smb_encrypt: "{{ veeam.smb_encrypt }}"
+      smb_anon_allowed: "{{ veeam.smb_anon_allowed }}"
+      client: "{{ veeam.smb_client }}"
+      fa_url: "{{ veeam.fa_url }}"
+      api_token: "{{ veeam.fa_api_token }}"
+      state: present
+    ignore_errors: true
+  - name: Create a file system export with nfs and smb policies
+    purestorage.flasharray.purefa_export:
+      name: "{{ veeam.fs_export_name }}"
+      filesystem: "{{ veeam.fs_name }}"
+      directory: "{{ veeam.fs_dir_name }}"
+      smb_policy: "{{ veeam.smb_policy_name }}"
+      nfs_policy: "{{ veeam.nfs_policy_name }}"
+      fa_url: "{{ veeam.fa_url }}"
+      api_token: "{{ veeam.fa_api_token }}"
+      state: present
+    ignore_errors: true
