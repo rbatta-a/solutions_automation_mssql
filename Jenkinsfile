@@ -239,6 +239,10 @@ pipeline {
 		println "-----${solname}---"
                 sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-test.yml -v"
             	} 
+		else if (solname == 'MSSQL_Test') {
+		println "-----${solname}---"
+                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssql-test.yml -vvv"
+            	} 
           	else if  (solname == 'Veeam') {
 			dir("${VEEAM_SERV_WSDIR}") {
 		          echo "current working directory: ${pwd()}"
