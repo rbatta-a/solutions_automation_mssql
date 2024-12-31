@@ -6,10 +6,10 @@
     disk_number: "{{ item }}"
   with_items: 
     - 1
-    - 2
-    - 3
-    - 4
-    - 5
+    # - 2
+    # - 3
+    # - 4
+    # - 5
 
 
 
@@ -24,10 +24,10 @@
       New-Item -ItemType Directory -Path "C:\Data{{ item }}\data{{ item }}"
   with_items: 
     - 1
-    - 2
-    - 3
-    - 4
-    - 5
+    # - 2
+    # - 3
+    # - 4
+    # - 5
 
 
 # - name: map drive | powershell
