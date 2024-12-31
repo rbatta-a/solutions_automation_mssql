@@ -105,6 +105,12 @@
     name: ServerManager
     state: present
 
+- name: Install dbatools PowerShell Module
+  ansible.builtin.win_shell: |
+    Install-Module -Name dbatools -Force -Scope CurrentUser
+  args:
+    executable: PowerShell
+    
 - name: Powershell | Ensure that DBA Tools module is present
   win_psmodule:
     name: dbatools
