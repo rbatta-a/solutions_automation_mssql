@@ -163,7 +163,7 @@ pipeline {
             if (solname == 'MSSQLDC_Test') {
 		println "-----${solname}---"
                 // sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/" +  "common-win.yml"
-                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-install.yml -v"
+                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-install.yml -vvv"
             } 
 	    if (solname == 'MSSQL_Test') {
 		println "-----${solname}---"
@@ -237,7 +237,7 @@ pipeline {
 		
 		if (solname == 'MSSQLDC_Test') {
 		println "-----${solname}---"
-                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-test.yml -v"
+                sh script: "ansible-playbook -i hosts.ini ../../ansible/playbooks/mssqldc-test.yml -vvv"
             	} 
 		else if (solname == 'MSSQL_Test') {
 		println "-----${solname}---"
