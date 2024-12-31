@@ -42,7 +42,13 @@
 #
 
 # Load required powershell modules
-
+- name: Ensure PSGallery is installed
+  win_shell: |
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+  args:
+    executable: PowerShell
+    
 - name: Install PSGallery from role
   ansible.builtin.include_role:
     name: trippsc2.windows.install_psgallery
