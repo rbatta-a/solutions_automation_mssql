@@ -270,13 +270,20 @@
 
 #map a SMB share from FB
 
+- name: Check if setup.exe exists
+  win_stat:
+    path: 'D:\'
+  register: setup_file
 
+- debug:
+    var: setup_file
+    
 - name: Install SQL Server
-  win_dsc:
+  ansible.windows.win_dsc:
     resource_name: SQLSetup
     Action: Install
     UpdateEnabled: True
-    SourcePath: C:\InstallMedia\SQLServer\media
+    SourcePath: D:\setup.exe
     InstanceName: "{{ mssql_instance_name }}"
     InstallSharedDir: "{{ mssql_installshared_path }}"
     InstallSharedwowDir: "{{ mssql_installsharedwow_path }}"
