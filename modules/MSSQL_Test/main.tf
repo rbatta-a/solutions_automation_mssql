@@ -18,7 +18,7 @@ module "vm" {
     data_disk_size                   = var.data_disk_size
     datastore_os                     = var.datastore_os
     datastore_data                   = var.datastore_data
-    datastore_data2                   = var.datastore_data2
+    datastore_data2                  = var.datastore_data2
     dc                               = var.dc
     winadminpass                     = var.winadminpass
     contentlib_name                  = var.contentlib_name
