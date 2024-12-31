@@ -88,7 +88,13 @@
     Install-Module -Name SqlServer -Force -Scope CurrentUser
   args:
     executable: PowerShell
-
+    
+- name: Install StorageDsc PowerShell Module
+  ansible.builtin.win_shell: |
+    Install-Module -Name StorageDsc -Force -Scope CurrentUser
+  args:
+    executable: PowerShell
+    
 - name: Powershell | Check for Storage DSC Powershell module
   win_psmodule:
     name: StorageDsc
