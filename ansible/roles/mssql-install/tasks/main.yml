@@ -328,18 +328,18 @@
 
 # End of win_dsc for SQL Server
 
-# # Firewall configuration
-# - name: Firewall | Allow Database Engine for instance
-#   win_dsc:
-#     resource_name: xFirewall
-#     Name: "SQL Server Database Engine instance {{ mssql_instance_name }}"
-#     Program: sqlservr.exe 
-#     Ensure: present
-#     Enabled: True
-#     Profile: "Domain"
-#     Direction: "Inbound"
-#     Action: Allow
-#     Description: "Allows the Database Engine to access the network"  
+# Firewall configuration
+- name: Firewall | Allow Database Engine for instance
+  win_dsc:
+    resource_name: xFirewall
+    Name: "SQL Server Database Engine instance"
+    Program: "sqlservr.exe" 
+    Ensure: present
+    Enabled: True
+    Profile: "Domain"
+    Direction: "Inbound"
+    Action: Allow
+    Description: "Allows the Database Engine to access the network"  
 
 
 # - name: Firewall | Allow SQLBrowser for instance
