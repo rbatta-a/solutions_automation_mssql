@@ -369,9 +369,9 @@
     BrowserSvcStartupType: "{{ mssql_browsersvc_mode }}"
     SuppressReboot: "{{ mssql_suppress_reboot }}"
     SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
-    SQLSvcAccount_password: ""
+    # SQLSvcAccount_password: ""
     AgtSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
-    AgtSvcAccount_password: ""
+    # AgtSvcAccount_password: ""
     SQLSysAdminAccounts: 
       - "Administrator"
   register: sql_install
