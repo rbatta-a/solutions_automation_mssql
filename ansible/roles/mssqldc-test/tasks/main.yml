@@ -12,7 +12,7 @@
 
 
 - name: create DB
-  win_command: sqlcmd -S SQL2022-DC-1\MSSQL2019 -E -i "C:\db.sql"
+  win_command: sqlcmd -i "C:\db.sql"
   register: sqlcmd_out
 
 - name: print result
@@ -20,7 +20,7 @@
     var: sqlcmd_out
 
 - name: Update auth option
-  win_command: sqlcmd -S SQL2022-DC-1\MSSQL2019 -E -i "C:\users.sql"
+  win_command: sqlcmd -i "C:\users.sql"
   register: sqlcmd2_out
 
 - name: print result
@@ -29,7 +29,7 @@
 
 - name: restart MSSQL
   ansible.windows.win_service:
-    name: MSSQL$MSSQL2019
+    name: MSSQLSERVER
     state: restarted
 
 
@@ -51,7 +51,7 @@
 
 # - name: Import DOES module and run DOES
 #   win_command: pwsh C:\script.ps1
-#   register: output1
+  # register: output1
 
 - name: print 
   debug:
