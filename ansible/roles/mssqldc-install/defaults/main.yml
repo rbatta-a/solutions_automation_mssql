@@ -122,8 +122,8 @@ mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
 # Master data services = MDS
 # ADVANCEDANALYTICS 	Installs R Services, requires the database engine. Unattended installations require /IACCEPTROPENLICENSETERMS parameter.   
 
-#mssql_features: SQLENGINE,FULLTEXT,CONN
-mssql_features: SQLENGINE
+mssql_features: SQLENGINE,REPLICATION,FULLTEXT,CONN
+# mssql_features: SQLENGINE
 
 
 # Collation
@@ -137,7 +137,7 @@ mssql_browsersvc_mode: Automatic
 # Ansible_Admin must be included so that the playbook can make configuration changes post install
 mssql_sysadmin_accounts:
   - "Administrator"
-  - "FSLAB\\vidm"
+  # - "FSLAB\\vidm"
 
 # Analysis Services Admins (if installed)
 mssql_asadmin_accounts: "{{ mssql_sysadmin_accounts }}"
