@@ -368,9 +368,9 @@
     SQLCollation: "{{ mssql_collation }}"
     BrowserSvcStartupType: "{{ mssql_browsersvc_mode }}"
     SuppressReboot: "{{ mssql_suppress_reboot }}"
-    SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
+    # SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
     # SQLSvcAccount_password: ""
-    AgtSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
+    # AgtSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
     # AgtSvcAccount_password: ""
     SQLSysAdminAccounts: 
       - "Administrator"
