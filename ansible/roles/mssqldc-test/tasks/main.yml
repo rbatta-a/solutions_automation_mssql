@@ -38,10 +38,10 @@
 #     path: \\fileserverdb\packages\SSMS-Setup-ENU.exe
 #     state: present
 
-# - name: Install an DOES
-#   win_package:
-#     path: \\fileserverdb\packages\DOES.Setup.msi
-#     state: present
+- name: Install an DOES
+  win_package:
+    path: data\DOES.Setup.msi
+    state: present
 
 # - name: Install  powershell
 #   win_package:
