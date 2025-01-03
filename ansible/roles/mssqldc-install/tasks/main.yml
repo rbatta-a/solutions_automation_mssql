@@ -105,10 +105,10 @@
     }
   tags: check_xsqlserver
   
-# - name: Install SqlServerDsc module
-#   win_shell: Install-Module -Name SqlServerDsc -Force -SkipPublisherCheck
-#   args:
-#     executable: PowerShell
+- name: Install SqlServerDsc module
+  win_shell: Install-Module -Name SqlServerDsc -Force -SkipPublisherCheck
+  args:
+    executable: PowerShell
     
 - name: Powershell | Check for SQLServer DSC Powershell module
   win_psmodule:
