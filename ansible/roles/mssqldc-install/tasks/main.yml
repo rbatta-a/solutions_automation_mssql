@@ -265,7 +265,7 @@
 
 - name: Check if setup.exe exists
   win_stat:
-    path: 'D:\'
+    path: 'D:\setup.exe'
   register: setup_file
 
 - debug:
