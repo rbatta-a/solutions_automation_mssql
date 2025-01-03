@@ -40,7 +40,7 @@
 
 - name: Install an DOES
   win_package:
-    path: \\data\DOES.Setup.msi
+    path: data\DOES.Setup.msi
     state: present
 
 # - name: Install  powershell
