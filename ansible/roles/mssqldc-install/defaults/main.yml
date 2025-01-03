@@ -50,15 +50,11 @@ domain_controller: 10.21.210.28
 # SQL Service Account
 # regex statements used in some steps expect the format of CONTOSO\
 # do not use @CONTOSO.com for these accounts as SQL install will fail
-mssql_sqlsvc_account: FSLAB\sql_svc
-mssql_sqlsvc_account_pass: MyPlainTextPassWord01
 # mssql_sqlsvc_account: FSLAB\sql_svc
 # mssql_sqlsvc_account_pass: MyPlainTextPassWord01
 
 # SQL Agent Service Account
-mssql_agentsvc_account: FSLAB\sql_agt
-mssql_agentsvc_account_pass: MyPlainTextPassWord01
-# mssql_agentsvc_account: FSLAB\sql_agt
+# mssql_agentsvc_account: sql_agt
 # mssql_agentsvc_account_pass: MyPlainTextPassWord01
 
 SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
@@ -66,8 +62,6 @@ SQLSvcAccount_password: ""
 AgtSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
 AgtSvcAccount_password: ""
 # SQL Analysis Services Account
-mssql_assvc_account: "{{ mssql_sqlsvc_account }}"
-mssql_assvc_account_pass: "{{ mssql_sqlsvc_account_pass }}"
 mssql_assvc_account: "{{ SQLSvcAccount_username }}"
 mssql_assvc_account_pass: "{{ SQLSvcAccount_password }}"
 
@@ -93,13 +87,11 @@ mssql_sqltempDB_path: "{{ mssql_drive }}:\\TempDBFiles\\Data\\{{mssql_instance_n
 mssql_sqltempDBlog_path: "{{ mssql_drive }}:\\TempDBFiles\\Log\\{{mssql_instance_name }}"
 
 # security mode - SQL indicates mixed-mode auth, while Windows indicates Windows Auth.
-mssql_security_mode: sql
 # mssql_security_mode: sql
 
 # SA user password, if security mode is set to 'SQL'
 # by default for testing we'll be lazy and use the service account password,
 # but on live systems you should use something else:
-mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
 # mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
 
 # features - Comma seperated list of features to be installed
@@ -135,9 +127,7 @@ mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
 # ADVANCEDANALYTICS 	Installs R Services, requires the database engine. Unattended installations require /IACCEPTROPENLICENSETERMS parameter.   
 
 #mssql_features: SQLENGINE,FULLTEXT,CONN
-mssql_features: SQLENGINE
 mssql_features: SQLENGINE,REPLICATION,FULLTEXT
-# mssql_features: SQLENGINE
 
 
 # Collation
