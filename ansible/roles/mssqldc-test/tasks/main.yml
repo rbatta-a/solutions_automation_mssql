@@ -37,10 +37,10 @@
     state: restarted
 
 
-- name: Install an MSSQL-Studio
-  win_package:
-    path: C:\SSMS-Setup-ENU.exe
-    state: present
+# - name: Install an MSSQL-Studio
+#   win_package:
+#     path: C:\SSMS-Setup-ENU.exe
+#     state: present
 
 - name: Install an DOES
   win_package:
