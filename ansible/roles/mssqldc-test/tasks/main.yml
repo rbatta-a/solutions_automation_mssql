@@ -53,9 +53,9 @@
 #     state: present
 
 
-# - name: Import DOES module and run DOES
-#   win_command: pwsh C:\script.ps1
-  # register: output1
+- name: Import DOES module and run DOES
+  win_command: pwsh C:\script.ps1
+  register: output1
 
 - name: print 
   debug:
