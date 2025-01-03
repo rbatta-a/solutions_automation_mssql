@@ -122,7 +122,7 @@ mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
 # Master data services = MDS
 # ADVANCEDANALYTICS 	Installs R Services, requires the database engine. Unattended installations require /IACCEPTROPENLICENSETERMS parameter.   
 
-mssql_features: SQLENGINE,REPLICATION,FULLTEXT,CONN
+mssql_features: SQLENGINE,REPLICATION,FULLTEXT
 # mssql_features: SQLENGINE
 
 
