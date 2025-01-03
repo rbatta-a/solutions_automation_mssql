@@ -223,31 +223,31 @@
 #     delegate_to: "{{ domain_controller }}"
 #   tags: service_account
 
-- name: Local | Ensure SQL Service account is present
-  win_user:
-    name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
-    fullname: "{{ mssql_instance_name }}"
-    password: "{{ mssql_sqlsvc_account_pass }}"
-    password_never_expires: yes
-    user_cannot_change_password: yes
-    description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
-    state: present
-    groups:
-      - Users
-  tags: service_account
+# - name: Local | Ensure SQL Service account is present
+#   win_user:
+#     name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
+#     fullname: "{{ mssql_instance_name }}"
+#     password: "{{ mssql_sqlsvc_account_pass }}"
+#     password_never_expires: yes
+#     user_cannot_change_password: yes
+#     description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+#     state: present
+#     groups:
+#       - Users
+#   tags: service_account
 
-- name: Local | Ensure SQL Agent Service account is present
-  win_user:
-    name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
-    fullname: "{{ mssql_instance_name }}"
-    password: "{{ mssql_agentsvc_account_pass }}"
-    password_never_expires: yes
-    user_cannot_change_password: yes
-    description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
-    state: present
-    groups:
-      - Users
-  tags: service_account
+# - name: Local | Ensure SQL Agent Service account is present
+#   win_user:
+#     name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
+#     fullname: "{{ mssql_instance_name }}"
+#     password: "{{ mssql_agentsvc_account_pass }}"
+#     password_never_expires: yes
+#     user_cannot_change_password: yes
+#     description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+#     state: present
+#     groups:
+#       - Users
+#   tags: service_account
 
 # SQL install may fail if a pending reboot is detected
 # Assuming we are allowed to reboot this step will check for pending reboots
