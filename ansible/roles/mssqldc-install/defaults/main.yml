@@ -29,7 +29,7 @@ mssql_userdblogvol_name: "{{ mssql_userdblogmount }}\\data5"
 # values must be divisible by 512
 
 # Max memory to allocate to this instance
-mssql_max_server_memory: 51200
+mssql_max_server_memory: 1024
 
 # Memory to reserve to the OS
 mssql_os_memory_reservation: 512
@@ -42,10 +42,10 @@ mssql_total_system_memory: "{{ mssql_max_server_memory + mssql_os_memory_reserva
 mssql_suppress_reboot: False
 
 ### Service Accounts ###
-domain: fslab
+domain: soln
 domain_suffix: local
 mssql_base_ldap_path: "cn=Users,dc={{ domain }},dc={{ domain_suffix }}"
-domain_controller: 10.21.210.28
+domain_controller: SOLN-DC01
 
 # SQL Service Account
 # regex statements used in some steps expect the format of CONTOSO\
@@ -54,8 +54,8 @@ mssql_sqlsvc_account: sql_svc
 mssql_sqlsvc_account_pass: MyPlainTextPassWord01
 
 # SQL Agent Service Account
-# mssql_agentsvc_account: sql_agt
-# mssql_agentsvc_account_pass: MyPlainTextPassWord01
+mssql_agentsvc_account: sql_agt
+mssql_agentsvc_account_pass: MyPlainTextPassWord01
 
 SQLSvcAccount_username: "NT AUTHORITY\\NETWORK SERVICE"
 SQLSvcAccount_password: ""
@@ -87,12 +87,12 @@ mssql_sqltempDB_path: "{{ mssql_drive }}:\\TempDBFiles\\Data\\{{mssql_instance_n
 mssql_sqltempDBlog_path: "{{ mssql_drive }}:\\TempDBFiles\\Log\\{{mssql_instance_name }}"
 
 # security mode - SQL indicates mixed-mode auth, while Windows indicates Windows Auth.
-# mssql_security_mode: sql
+mssql_security_mode: sql
 
 # SA user password, if security mode is set to 'SQL'
 # by default for testing we'll be lazy and use the service account password,
 # but on live systems you should use something else:
-# mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
+mssql_sa_password: "{{ mssql_sqlsvc_account_pass }}"
 
 # features - Comma seperated list of features to be installed
 #
@@ -127,7 +127,7 @@ mssql_sqltempDBlog_path: "{{ mssql_drive }}:\\TempDBFiles\\Log\\{{mssql_instance
 # ADVANCEDANALYTICS 	Installs R Services, requires the database engine. Unattended installations require /IACCEPTROPENLICENSETERMS parameter.   
 
 #mssql_features: SQLENGINE,FULLTEXT,CONN
-mssql_features: SQLENGINE,REPLICATION,FULLTEXT
+mssql_features: SQLENGINE
 
 
 # Collation

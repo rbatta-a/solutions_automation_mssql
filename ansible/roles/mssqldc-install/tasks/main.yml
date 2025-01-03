@@ -105,10 +105,10 @@
     }
   tags: check_xsqlserver
   
-- name: Install SqlServerDsc module
-  win_shell: Install-Module -Name SqlServerDsc -Force -SkipPublisherCheck
-  args:
-    executable: PowerShell
+# - name: Install SqlServerDsc module
+#   win_shell: Install-Module -Name SqlServerDsc -Force -SkipPublisherCheck
+#   args:
+#     executable: PowerShell
     
 - name: Powershell | Check for SQLServer DSC Powershell module
   win_psmodule:
@@ -223,49 +223,49 @@
 #     delegate_to: "{{ domain_controller }}"
 #   tags: service_account
 
-# - name: Local | Ensure SQL Service account is present
-#   win_user:
-#     name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
-#     fullname: "{{ mssql_instance_name }}"
-#     password: "{{ mssql_sqlsvc_account_pass }}"
-#     password_never_expires: yes
-#     user_cannot_change_password: yes
-#     description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
-#     state: present
-#     groups:
-#       - Users
-#   tags: service_account
+- name: Local | Ensure SQL Service account is present
+  win_user:
+    name: "{{ mssql_sqlsvc_account | regex_search('[^\\\\]*$') }}"
+    fullname: "{{ mssql_instance_name }}"
+    password: "{{ mssql_sqlsvc_account_pass }}"
+    password_never_expires: yes
+    user_cannot_change_password: yes
+    description: "SQL Service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+    state: present
+    groups:
+      - Users
+  tags: service_account
 
-# - name: Local | Ensure SQL Agent Service account is present
-#   win_user:
-#     name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
-#     fullname: "{{ mssql_instance_name }}"
-#     password: "{{ mssql_agentsvc_account_pass }}"
-#     password_never_expires: yes
-#     user_cannot_change_password: yes
-#     description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
-#     state: present
-#     groups:
-#       - Users
-#   tags: service_account
+- name: Local | Ensure SQL Agent Service account is present
+  win_user:
+    name: "{{ mssql_agentsvc_account | regex_search('[^\\\\]*$') }}"
+    fullname: "{{ mssql_instance_name }}"
+    password: "{{ mssql_agentsvc_account_pass }}"
+    password_never_expires: yes
+    user_cannot_change_password: yes
+    description: "SQL Agent service account for {{ inventory_hostname }}\\{{ mssql_instance_name }}"
+    state: present
+    groups:
+      - Users
+  tags: service_account
 
 # SQL install may fail if a pending reboot is detected
 # Assuming we are allowed to reboot this step will check for pending reboots
 # and execute a reboot, reboot activity can be controlled using the variable mssql_suppress_reboot
 
 
-# - name: Ensure that a reboot is not pending
-#   when: ansible_reboot_pending
-#   debug:
-#     msg: 'Pending reboot detected'
-#   changed_when: true
-#   notify: reboot windows
+- name: Ensure that a reboot is not pending
+  when: ansible_reboot_pending
+  debug:
+    msg: 'Pending reboot detected'
+  changed_when: true
+  notify: reboot windows
 
-# - meta: flush_handlers
+- meta: flush_handlers
 
 - name: Check if setup.exe exists
   win_stat:
-    path: 'D:\\setup.exe'
+    path: 'D:\'
   register: setup_file
 
 - debug:
@@ -298,14 +298,14 @@
     # two options for these normally single option items.
 
     # SQL Service Account
-    SQLSvcAccount_username: "{{ SQLSvcAccount_username }}"
-    SQLSvcAccount_password: "{{ SQLSvcAccount_password }}"
+    SQLSvcAccount_username: "{{ mssql_sqlsvc_account  }}"
+    SQLSvcAccount_password: "{{ mssql_sqlsvc_account_pass }}"
     # SQL Agent Service Account
-    # AgtSvcAccount_username: "{{ mssql_agentsvc_account }}"
-    # AgtSvcAccount_password: "{{ mssql_agentsvc_account_pass }}"
+    AgtSvcAccount_username: "{{ mssql_agentsvc_account }}"
+    AgtSvcAccount_password: "{{ mssql_agentsvc_account_pass }}"
     # SQL Analysis Services Account
-    # ASSvcAccount_username: "{{ mssql_assvc_account }}"
-    # ASSvcAccount_password: "{{ mssql_assvc_account_pass }}"
+    ASSvcAccount_username: "{{ mssql_assvc_account }}"
+    ASSvcAccount_password: "{{ mssql_assvc_account_pass }}"
 
     # Used when installing on a network path, comment out 
     # SourceCredential_username: "{{ ansible_user }}"
