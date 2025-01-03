@@ -14,6 +14,16 @@
   win_copy:
     src: /data/DOES.Setup.msi
     dest: C:\
+    
+- name: Windows | Copy powershell
+  win_copy:
+    src: /data/PowerShell-7.4.6-win-x64.msi
+    dest: C:\
+
+- name: Windows | Copy MSSQL-Studio
+  win_copy:
+    src: /data/SSMS-Setup-ENU.exe
+    dest: C:\
 
 - name: create DB
   win_command: sqlcmd -i "C:\db.sql"
