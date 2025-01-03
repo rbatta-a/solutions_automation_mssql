@@ -9,7 +9,11 @@
     - db.sql
     - users.sql
     - script.ps1
-
+    
+- name: Windows | Copy D.O.E.S 
+  win_copy:
+    src: /data/DOES.Setup.msi
+    dest: C:\
 
 - name: create DB
   win_command: sqlcmd -i "C:\db.sql"
@@ -40,7 +44,7 @@
 
 - name: Install an DOES
   win_package:
-    path: data\DOES.Setup.msi
+    path: C:\DOES.Setup.msi
     state: present
 
 # - name: Install  powershell
