@@ -323,7 +323,7 @@
 
 - name: Debug SQL installation result
   debug:
-    var: sql_install
+    var: install_sql
     
 # Firewall configuration
 # - name: Firewall | Allow Database Engine for instance
