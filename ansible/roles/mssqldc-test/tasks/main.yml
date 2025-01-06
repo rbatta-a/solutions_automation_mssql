@@ -33,13 +33,13 @@
   debug:
     var: sqlcmd_out
 
-- name: Update auth option
-  win_command: sqlcmd -i "C:\users.sql"
-  register: sqlcmd2_out
+# - name: Update auth option
+#   win_command: sqlcmd -i "C:\users.sql"
+#   register: sqlcmd2_out
 
-- name: print result
-  debug:
-    var: sqlcmd2_out
+# - name: print result
+#   debug:
+#     var: sqlcmd2_out
 
 - name: restart MSSQL
   ansible.windows.win_service:
