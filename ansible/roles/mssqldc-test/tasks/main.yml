@@ -48,7 +48,17 @@
   win_copy:
     src: /data/SSMS-Setup-ENU.exe
     dest: C:\
+    
+- name: Install an MSSQL-Studio
+  win_package:
+    path: C:\SSMS-Setup-ENU.exe
+    state: present
 
+- name: Install an DOES
+  win_package:
+    path: C:\DOES.Setup.msi
+    state: present
+    
 - name: create DB
   win_command: sqlcmd -i "C:\db.sql"
   register: sqlcmd_out
@@ -65,21 +75,11 @@
   debug:
     var: sqlcmd2_out
 
-- name: restart MSSQL
-  ansible.windows.win_service:
-    name: MSSQLSERVER
-    state: restarted
+# - name: restart MSSQL
+#   ansible.windows.win_service:
+#     name: MSSQLSERVER
+#     state: restarted
 
-
-- name: Install an MSSQL-Studio
-  win_package:
-    path: C:\SSMS-Setup-ENU.exe
-    state: present
-
-- name: Install an DOES
-  win_package:
-    path: C:\DOES.Setup.msi
-    state: present
 
 - name: Install  powershell
   win_package:
