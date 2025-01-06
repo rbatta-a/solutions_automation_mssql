@@ -1,6 +1,30 @@
 
 ---
+- name: Ensure directory C:\Data1\data1\DatabaseFiles\MSSQLSERVER exists
+  ansible.windows.win_file:
+    path: C:\Data1\data1\DatabaseFiles\MSSQLSERVER
+    state: directory
 
+- name: Ensure directory C:\Data2\data2 exists
+  ansible.windows.win_file:
+    path: C:\Data2\data2
+    state: directory
+
+- name: Ensure directory C:\Data3\data3 exists
+  ansible.windows.win_file:
+    path: C:\Data3\data3
+    state: directory
+
+- name: Ensure directory C:\Data4\data4 exists
+  ansible.windows.win_file:
+    path: C:\Data4\data4
+    state: directory
+
+- name: Ensure directory C:\Data5\data5\DatabaseLogs\MSSQLSERVER exists
+  ansible.windows.win_file:
+    path: C:\Data5\data5\DatabaseLogs\MSSQLSERVER
+    state: directory
+    
 - name: Copy file to C:\
   ansible.windows.win_copy:
     src: "{{ item }}"
