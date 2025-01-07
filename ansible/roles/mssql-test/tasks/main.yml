@@ -1,6 +1,30 @@
 
 ---
+- name: Ensure directory C:\Data1\data1\DatabaseFiles\MSSQLSERVER exists
+  ansible.windows.win_file:
+    path: C:\Data1\data1\DatabaseFiles\MSSQLSERVER
+    state: directory
 
+- name: Ensure directory C:\Data2\data2 exists
+  ansible.windows.win_file:
+    path: C:\Data2\data2
+    state: directory
+
+- name: Ensure directory C:\Data3\data3 exists
+  ansible.windows.win_file:
+    path: C:\Data3\data3
+    state: directory
+
+- name: Ensure directory C:\Data4\data4 exists
+  ansible.windows.win_file:
+    path: C:\Data4\data4
+    state: directory
+
+- name: Ensure directory C:\Data5\data5\DatabaseLogs\MSSQLSERVER exists
+  ansible.windows.win_file:
+    path: C:\Data5\data5\DatabaseLogs\MSSQLSERVER
+    state: directory
+    
 - name: Copy file to C:\
   ansible.windows.win_copy:
     src: "{{ item }}"
@@ -25,6 +49,16 @@
     src: /data/SSMS-Setup-ENU.exe
     dest: C:\
     
+- name: Install an MSSQL-Studio
+  win_package:
+    path: C:\SSMS-Setup-ENU.exe
+    state: present
+
+- name: Install an DOES
+  win_package:
+    path: C:\DOES.Setup.msi
+    state: present
+    
 - name: create DB
   win_command: sqlcmd -i "C:\db.sql"
   register: sqlcmd_out
@@ -46,15 +80,6 @@
     name: MSSQLSERVER
     state: restarted
 
-# - name: Install an MSSQL-Studio
-#   win_package:
-#     path: C:\SSMS-Setup-ENU.exe
-#     state: present
-
-- name: Install an DOES
-  win_package:
-    path: C:\DOES.Setup.msi
-    state: present
 
 - name: Install  powershell
   win_package:
