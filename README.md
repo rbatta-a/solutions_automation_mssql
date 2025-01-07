@@ -1,0 +1,1 @@
+# solutions_automation_mssql
