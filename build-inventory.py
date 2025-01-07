@@ -25,9 +25,9 @@ print(sol)
 """
 this below section logic is purely for Veeam values passing to the hosts and works for Veeam alone.
 """
-direct_veeam_path =  '/vijayveeam/racsetup_copy/ansible'
-os.chdir(direct_veeam_path)
-print(os.getcwd())
+#direct_veeam_path =  '/vijayveeam/racsetup_copy/ansible'
+#os.chdir(direct_veeam_path)
+#print(os.getcwd())
 
 def append_ip_to_hosts_in_veeam_linux_server(ip_addresses=ips, hosts_file= os.getcwd() + '/veeam-asm/hosts.yml'):
     '''
@@ -98,9 +98,9 @@ else:
 # These files needs to be checked in so that the hardcoded lines can be removed in future.
 
 
-direct_asm_path = '/root/COPY_OF_ORACLE_BUILD/ansible'
-os.chdir(direct_asm_path)
-print(os.getcwd())
+#direct_asm_path = '/root/COPY_OF_ORACLE_BUILD/ansible'
+#os.chdir(direct_asm_path)
+#print(os.getcwd())
 
 
 def append_ip_to_hosts(ip_addresses, hosts_file= os.getcwd() + '/inventory-asm-demo/hosts.yml'):
