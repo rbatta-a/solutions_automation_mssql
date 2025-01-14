@@ -1,0 +1,18 @@
+---
+
+oracle_tnsnames_config:
+  ORCLPDB:
+    failover: yes
+    connect_timeout: 5
+    retry_count: 3
+    address:
+      - host: oracle-vm-2
+        port: 1521
+        protocol: TCP
+
+
+
+tnsnames_installed:
+  - home: db2103-gi-ee
+    state: present
+    tnsname: ORCLPDB

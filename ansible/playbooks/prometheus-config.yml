@@ -1,0 +1,17 @@
+---
+    # common playbook
+  - hosts: 'localhost'
+    gather_facts: false
+    vars_files:
+      - "../../modules/{{ solution }}/hosts.yml"
+    roles:
+      - {role: prometheus-config}
+
+  - hosts: all
+    become:        yes
+    become_method: sudo
+    gather_facts:  yes
+    roles:
+    - {role: prometheus-update}
+
+      

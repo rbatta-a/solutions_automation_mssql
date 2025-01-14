@@ -1,0 +1,59 @@
+- name: 'Remove default repo file'
+  file:
+    path: '/etc/yum.repos.d/{{ item }}'
+    state: absent
+  with_items:
+    - redhat.repo
+
+- name: 'Add yum repo RHEL8'
+  template:
+    src: '{{ item.src}}'
+    dest: '/etc/yum.repos.d/{{ item.dest}}'
+    owner: root
+    group: root
+    mode: 0640
+  when: 'ansible_distribution == "RedHat" and ansible_distribution_major_version == ''8'''
+  with_items:
+    -
+      src: rhel8-repo.j2
+      dest: rhel8-local.repo
+
+# - name: install epel repo
+#   dnf:
+#     name: 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm'
+#     disable_gpg_check: yes
+#     state: present
+#   when: 'ansible_distribution == "RedHat" and ansible_distribution_major_version == ''8'''
+
+- name: install common packages
+  dnf:
+    name: 
+      - sysstat
+      - dstat
+      - nfs-utils
+
+- name: create sysstat config directory
+  file:
+    path: '/etc/systemd/system/sysstat-collect.timer.d'
+    state: directory
+    mode: '0755'
+
+
+- name: copy the sysstat config file 
+  copy:
+    src: override.conf
+    dest: /etc/systemd/system/sysstat-collect.timer.d/override.conf
+    owner: root
+    group: root
+    mode: 0755
+  notify: reload_sysstat_collect_timer
+
+# - name: 'Configure NTP server'
+
+# - name: 'Configure mail client'
+
+- name: stop firewalld service
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no

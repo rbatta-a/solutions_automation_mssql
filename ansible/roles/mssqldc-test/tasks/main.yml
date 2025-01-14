@@ -1,0 +1,96 @@
+
+---
+- name: Ensure directory C:\Data1\data1\DatabaseFiles\MSSQLSERVER exists
+  ansible.windows.win_file:
+    path: C:\Data1\data1\DatabaseFiles\MSSQLSERVER
+    state: directory
+
+- name: Ensure directory C:\Data2\data2 exists
+  ansible.windows.win_file:
+    path: C:\Data2\data2
+    state: directory
+
+- name: Ensure directory C:\Data3\data3 exists
+  ansible.windows.win_file:
+    path: C:\Data3\data3
+    state: directory
+
+- name: Ensure directory C:\Data4\data4 exists
+  ansible.windows.win_file:
+    path: C:\Data4\data4
+    state: directory
+
+- name: Ensure directory C:\Data5\data5\DatabaseLogs\MSSQLSERVER exists
+  ansible.windows.win_file:
+    path: C:\Data5\data5\DatabaseLogs\MSSQLSERVER
+    state: directory
+    
+- name: Copy file to C:\
+  ansible.windows.win_copy:
+    src: "{{ item }}"
+    dest: C:\
+  with_items: 
+    - db.sql
+    - users.sql
+    - script.ps1
+    
+- name: Windows | Copy D.O.E.S 
+  win_copy:
+    src: /data/DOES.Setup.msi
+    dest: C:\
+    
+- name: Windows | Copy powershell
+  win_copy:
+    src: /data/PowerShell-7.4.6-win-x64.msi
+    dest: C:\
+
+- name: Windows | Copy MSSQL-Studio
+  win_copy:
+    src: /data/SSMS-Setup-ENU.exe
+    dest: C:\
+    
+# - name: Install an MSSQL-Studio
+#   win_package:
+#     path: C:\SSMS-Setup-ENU.exe
+#     state: present
+
+- name: Install an DOES
+  win_package:
+    path: C:\DOES.Setup.msi
+    state: present
+    
+- name: create DB
+  win_command: sqlcmd -i "C:\db.sql"
+  register: sqlcmd_out
+
+- name: print result
+  debug:
+    var: sqlcmd_out
+
+- name: Update auth option
+  win_command: sqlcmd -i "C:\users.sql"
+  register: sqlcmd2_out
+
+- name: print result
+  debug:
+    var: sqlcmd2_out
+
+- name: restart MSSQL
+  ansible.windows.win_service:
+    name: MSSQLSERVER
+    state: restarted
+
+
+- name: Install  powershell
+  win_package:
+    path: C:\PowerShell-7.4.6-win-x64.msi
+    state: present
+
+
+- name: Import DOES module and run DOES
+  win_command: pwsh C:\script.ps1
+  register: output1
+
+- name: print 
+  debug:
+    var: output1

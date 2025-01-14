@@ -1,0 +1,19 @@
+# Oracle Settings
+export TMP=/tmp
+export TMPDIR=/tmp
+
+export ORACLE_HOSTNAME={{ ansible_hostname }}
+export ORACLE_UNQNAME={{ oracle_sid }}
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+export ORA_INVENTORY=/u01/app/oraInventory
+export ORACLE_SID={{ oracle_sid }}
+export PDB_NAME={{ oracle_pdb }}
+export DATA_DIR=/u02/oradata
+
+export PATH=/usr/sbin:/usr/local/bin:$PATH
+export PATH=/u01/app/oracle/product/19.0.0/dbhome_1/bin:$PATH
+
+export LD_LIBRARY_PATH=/u01/app/oracle/product/19.0.0/dbhome_1/lib:/lib:/usr/lib
+export CLASSPATH=/u01/app/oracle/product/19.0.0/dbhome_1/jlib:/u01/app/oracle/product/19.0.0/dbhome_1/rdbms/jlib
+export CV_ASSUME_DISTID=OEL7.8

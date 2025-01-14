@@ -1,0 +1,14 @@
+- name: map drive 
+  block:
+    - name: Map SMB share
+      win_mapped_drive:
+        letter: Z
+        path: \\s500-2118\share_packages
+        state: present
+      register: mount_drive
+
+    - name: Reboot the machine with all defaults
+      win_reboot:
+      run_once: true
+      when: 
+        - mount_drive.changed

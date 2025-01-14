@@ -1,0 +1,110 @@
+- name: check if node exporter exist
+  stat:
+    path: "{{ postgres_exporter_bin }}"
+  register: __check_postgres_exporter_present
+
+- name: create postgres exporter group
+  group:
+    name: "{{ exporter_group }}"
+    state: present
+
+- name: create postgres exporter user
+  user:
+    name: "{{ exporter_user }}"
+    group: "{{ exporter_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: false
+
+- name: create postgres exporter config dir
+  file:
+    path: "{{ postgres_exporter_dir_conf }}"
+    state: directory
+    owner: "{{ exporter_user }}"
+    group: "{{ exporter_group }}"
+
+#- name: "Create directory for exporter"
+ # command: mkdir /opt/postgres_exporter
+
+- name: "Download and extract postgres_exporter"
+  command: wget https://github.com/prometheus-community/postgres_exporter/releases/download/v0.12.0-rc.0/postgres_exporter-0.12.0-rc.0.linux-amd64.tar.gz -P /opt/postgres_exporter/
+
+- name: "Extract the postgres_exporter"
+  command: tar -xzvf /opt/postgres_exporter/postgres_exporter-0.12.0-rc.0.linux-amd64.tar.gz -C /opt/postgres_exporter/
+  
+#- name: "Extract the postgres_exporter"
+ # command: "cp /opt/postgres_exporter/postgres_exporter-0.12.0-rc.0.linux-amd64/postgres_exporter /usr/local/bin/"
+
+- name: "Create environment variable"
+  copy:
+    dest: /opt/postgres_exporter/postgres_exporter.env
+    content: DATA_SOURCE_NAME="postgresql://prometheus:postgres@0.0.0.0:5432/?sslmode=disable"
+
+- name: "Copying the postgres_exporter contents to local bin"
+  copy:
+    src: "/opt/postgres_exporter/postgres_exporter-0.12.0-rc.0.linux-amd64/postgres_exporter"
+    dest: "{{ postgres_exporter_bin }}"
+    owner: "{{ exporter_user }}"
+    group: "{{ exporter_group }}"
+    mode: 0755
+    remote_src: yes
+
+
+#- name: Create user with password and grant priv
+ # community.postgresql.postgresql_user:
+ #   db: "{{ postgres_db_name }}"
+   # name: postgresd_exporter
+   # password: "{{ postgrespass }}"
+   # login_password: "{{ postgrespass }}"
+
+- name: "prometheus user creation for DB"
+  postgresql_user:
+    state: present
+    name: "{{ exporter_user }}"
+    password: postgres
+  become: yes
+  become_user: postgres
+
+  
+- name: "prometheus user access to app db"
+  postgresql_privs:
+    type: database
+    database: "{{ postgres_db_name }}"
+    roles: "{{ exporter_user }}"
+    grant_option: yes
+    privs: all
+  become: yes
+  become_user: postgres
+
+#- name: Grant all privileges to the user on the database
+#  community.postgresql.postgresql_privs:
+    #database: "{{ postgres_db_name }}"
+   # role_name: postgresd_exporter
+   # priv: ALL
+    #state: present
+
+- name: add postgres exporter config 
+  template:
+    src: postgresd_exporter.j2
+    dest: /etc/.postgres_exporter.cnf
+    owner: root
+    group: prometheus
+    mode: 0755
+
+- name: install service
+  template:
+    src: postgres_exporter.service.j2
+    dest: /etc/systemd/system/postgres_exporter.service
+    owner: root
+    group: root
+    mode: 0755
+  notify: reload_daemon_and_restart_postgres_exporter
+
+- meta: flush_handlers
+
+- name: service always started
+  systemd:
+    name: postgres_exporter
+    state: started
+    enabled: yes

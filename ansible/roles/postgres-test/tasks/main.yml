@@ -1,0 +1,44 @@
+
+- name: "App database Creation"
+  postgresql_db:
+    state: present
+    name: "{{ db_name }}"
+  become: yes
+  become_user: postgres
+
+- name: "database user creation"
+  postgresql_user:
+    state: present
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+  become: yes
+  become_user: postgres
+
+- name: "database  user access to app db"
+  postgresql_privs:
+    type: database
+    database: "{{ db_name }}"
+    roles: "{{ db_user }}"
+    grant_option: yes
+    privs: all
+  become: yes
+  become_user: postgres
+
+
+- name: check permission
+  ansible.builtin.file:
+    path: "{{ mount_point }}"
+    owner: "postgres"
+    group: "postgres"
+    mode: '0700'
+  
+- name: Install library
+  command: rpm -ivh https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/libopenssl1_0_0-1.0.2p-3.49.1.x86_64.rpm
+       
+- name: Install DOES    
+  command: rpm -ivh http://prod-repo.puretec.purestorage.com/tools/DOES/purestorage_does-3.3.0-1.x86_64.rpm  
+
+- name: Copying DOES rpm and ingest files from Source server to Postgres
+  ansible.builtin.copy:
+    src: /tmp/data/Engine.Oil-0001.gz
+    dest: /tmp/Engine.Oil-0001.gz  

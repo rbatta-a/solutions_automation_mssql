@@ -1,0 +1,13 @@
+---
+is_sw_source_local: true
+oracle_sw_copy: false
+oracle_sw_unpack: false
+
+# Directory for Installation-Media
+oracle_stage_remote: /sw
+
+# Example for Remote NFS
+install_from_nfs: true          # Mount NFS-Share?
+nfs_server_sw: 10.21.236.80
+nfs_server_sw_path: /oracle_binary
+#oracle_stage_remote: /sw    # local mount point for NFS share

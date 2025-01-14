@@ -1,0 +1,194 @@
+- name: install oracle preinstall
+  package:
+    name: oracle-database-preinstall-19c
+    state: latest
+
+- name: Set password for oracle user
+  user:
+    name: oracle
+    password: oracle
+
+- name: Ensure SELinux is set to permissive mode
+  ansible.builtin.lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: SELINUX=permissive
+
+# - name: Disable Selinux
+#   selinux:
+#    state: disabled
+
+- name: stop and disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: "Ansible Create directory if not exists"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    group: oinstall
+    owner: oracle
+  with_items:
+    - /u01/app/oracle/product/19.0.0/dbhome_1
+    - /u02/oradata
+    - /home/oracle/scripts
+    - /u01/stage
+
+
+- name: "Package Create directory if not exists"
+  file:
+    path: /packages
+    state: directory
+
+- name: Mount migration volume
+  mount:
+    path: /packages
+    fstype: nfs
+    src: 10.21.236.80:/packages_share
+    state: mounted
+
+- name: format the additional disk
+  filesystem:
+    fstype: xfs
+    dev: /dev/sdb
+
+- name: Mount migration volume
+  mount:
+    path: "/u02/oradata"
+    fstype: xfs
+    src: /dev/sdb
+    state: mounted
+
+- name: "Ansible Create directory if not exists"
+  file:
+    path: /u02/oradata
+    group: oinstall
+    owner: oracle
+
+- name: 'Create oracle env file'
+  template:
+    src: oracle-env.j2
+    dest: /home/oracle/scripts/setEnv.sh
+    owner: oracle
+    group: oinstall
+    mode: 0744
+
+
+- name: Add env to oracle profile
+  lineinfile:
+    path: /home/oracle/.bash_profile
+    line: '. /home/oracle/scripts/setEnv.sh'
+    create: no
+
+- name: copy the env scripts  
+  copy:
+    src: '{{ item.src}}'
+    dest: '/home/oracle/scripts/{{ item.dest}}'
+    owner: oracle
+    group: oinstall
+    mode: 0744
+  with_items:
+    -
+      src: stop_all.sh
+      dest: stop_all.sh
+    -
+      src: start_all.sh
+      dest: start_all.sh
+    -
+      src: ocenv
+      dest: ocenv
+
+- name: check if oracle_home exists
+  find:
+    path: /u01/app/oracle/product/19.0.0/dbhome_1
+  register: ora_home
+
+- name: Extract oracle installation package into oracle home
+  unarchive:
+    src: /packages/oracle/LINUX.X64_193000_db_home.zip
+    dest: /u01/app/oracle/product/19.0.0/dbhome_1
+    owner: oracle
+    group: oinstall
+    remote_src: yes
+  when: not ora_home.matched > 0
+
+- name: add ocenv
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  become_user: oracle
+  shell: "alias ocenv=/home/oracle/scripts/ocenv"
+
+
+ 
+- name: 'Create oracle install response file'
+  template:
+    src: oracle-install.j2
+    dest: '{{ stage_dir }}/{{ oradbsoft_rsp }}.rsp'
+    owner: oracle
+    group: oinstall
+    mode: 0744
+
+
+
+- name: Install Oracle 19c Database Software
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  become_user: oracle
+  shell: "export CV_ASSUME_DISTID=OEL7.8;{{ oracle_home }}/runInstaller -silent -responseFile {{ stage_dir }}/{{ oradbsoft_rsp }}.rsp -noconfig -ignorePrereqFailure"
+  ignore_errors: True
+  #changed_when: "'Choose a different location as Oracle home' not in orainstall.stderr"
+  #when: not ora_home.stat.isdir
+
+
+
+- name: Execute orainstroot.sh
+  remote_user: ansible
+  become: yes
+  become_user: root
+  shell: /bin/sh "{{ oracle_inventory }}/orainstRoot.sh"
+
+
+ 
+- name: Execute root.sh
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  become_user: root
+  shell: /bin/sh "{{ oracle_home }}/root.sh"
+ 
+ 
+# - name: start listner
+#   remote_user: ansible
+#   become: yes
+#   become_method: sudo
+#   become_user: oracle
+#   shell: /u01/app/oracle/product/19.0.0/dbhome_1/bin/lsnrctl start
+#   ignore_errors: True
+
+- name: check if db exits
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  become_user: oracle
+  shell: /home/oracle/scripts/ocenv | grep {{ oracle_sid }} |wc -l
+  ignore_errors: True
+  register: db_count
+
+
+
+- name: Create DB
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  become_user: oracle
+  shell: "/u01/app/oracle/product/19.0.0/dbhome_1/bin/dbca -silent -createDatabase -templateName General_Purpose.dbc -sysPassword SysPassword1 -systemPassword SysPassword1  -responseFile NO_VALUE -gdbname {{ oracle_sid }} -sid {{ oracle_sid }} -emConfiguration NONE -storageType FS -datafileDestination /u02/oradata -memoryMgmtType auto_sga -J-Doracle.assistants.dbca.validate.ConfigurationParams=false -memoryPercentage 40"
+  ignore_errors: True
+  register: script4  
+  #changed_when: "'DBT-10317' not in script4.stderr"
+  #when: db_count.stdout == '0'
+
