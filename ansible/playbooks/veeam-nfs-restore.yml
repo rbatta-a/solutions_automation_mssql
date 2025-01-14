@@ -1,0 +1,48 @@
+- name: Restore NFS share from Backup
+  hosts: veeam-server
+  vars:
+    nfs_share_restore_point: "10.21.122.33:/test-export"
+    restore_path: "10.21.122.33:/test-export/newrestore"
+  tasks:
+    - name: Debug restore operation
+      ansible.builtin.debug:
+        msg: Initiating restore for NFS Share {{ nfs_share_restore_point }} to {{ restore_path }}
+
+    - name: Execute multiline PowerShell script for restore
+      win_shell: |
+        Add-PSSnapin VeeamPSSnapIn -ErrorAction SilentlyContinue
+        # Define variables
+        $backupJobName = "BackupJob"  # The name of the backup job you want to restore from
+        $restorePath = "10.21.122.33:/test-export/newrestore5"  # The target path where the data will be restored
+        $sourcePath = "10.21.122.33:/test-export"  # The source path to restore
+        $repositoryName = "10.21.210.156"  # Repository to search for the backup
+        $restoreJobName = "RestoreJob4"
+        
+        # Get the backup repository
+        $repository = Get-VBRBackupRepository -Name $repositoryName
+        if (-not $repository) {
+            Write-Host "Failed to find repository: $repositoryName"
+            exit 1
+        }
+        
+        # Find the backup job by name
+        $backup = Get-VBRUnstructuredBackup -Name $backupJobName
+        if (-not $backup) {
+            Write-Host "Failed to find backup job: $backupJobName"
+            exit 1
+        }
+        
+        # Create a NAS restore point
+        $restorePoint = Get-VBRUnstructuredBackupRestorePoint -Backup $backup  | Sort-Object CreationTime -Descending | Select-Object -First 1
+        if (-not $restorePoint) {
+            Write-Host "No restore points found for backup job: $backupJobName"
+            exit 1
+        }
+        
+        $server = Get-VBRUnstructuredServer -Name $sourcePath
+        # Start the restore job
+        Start-VBRNasBackupRestore -RestorePoint $restorePoint -DestinationFolderPath $restorePath -DestinationServer $server -OverwriteMode Overwrite
+       
+
+      args:
+        executable: powershell

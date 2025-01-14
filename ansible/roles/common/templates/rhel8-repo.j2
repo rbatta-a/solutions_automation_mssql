@@ -1,0 +1,19 @@
+[AppStream]
+name=rhel8-AppStream
+mediaid=None
+metadata_expire=-1
+gpgcheck=0
+cost=500
+enabled=1
+baseurl=http://{{ yumrepo_server }}/pulp/repos/rhel8-AppStream
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+[BaseOS]
+name=rhel8-BaseOS
+mediaid=None
+metadata_expire=-1
+gpgcheck=0
+cost=500
+enabled=1
+baseurl=http://{{ yumrepo_server }}/pulp/repos/rhel8-baseos/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release

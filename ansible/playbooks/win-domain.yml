@@ -1,0 +1,17 @@
+- name: Join Windows VM to Domain
+  hosts: all
+  vars_files:
+    - "../vars/common.yml"
+  tasks:
+    - name: Ensure the computer is joined to the domain
+      ansible.windows.win_domain_membership:
+        domain_name: "lab.local" 
+        dns_domain_name: "lab.local" 
+        domain_admin_user: "lab.local\\administrator"
+        domain_admin_password: "VMware1!"
+        state: "domain"
+      register: domain_join_result
+
+    - name: Reboot the server if required
+      ansible.windows.win_reboot:
+      when: domain_join_result.reboot_required

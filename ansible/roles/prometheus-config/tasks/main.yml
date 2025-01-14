@@ -1,0 +1,38 @@
+# ---
+# - name: Processing details file
+#   hosts: 'localhost'
+#   gather_facts: false
+#   vars_files:
+#   - "{{ module_dir }}/vars/{{ env }}/fb_details.yml"
+#   tasks:
+
+
+- set_fact:
+    data_vars: "{{ hg }}"
+
+- debug:
+    msg: "{{ data_vars }}"
+
+- name: prepare target list of servers
+  set_fact:
+    new_targets: "{{ new_targets | default([]) + [''.join((item,':9100'))] }}"
+  with_items: "{{ data_vars }}"
+
+- name: Create JSON file
+  set_fact:
+    json_content: "{{ [{'targets': new_targets, 'labels': {'job': 'hackathon-job'}}] }}"
+    
+- name: Write  JSON file
+  copy:
+    content: "{{ json_content | to_json }}"
+    dest: /tmp/target.json
+
+
+
+
+
+
+
+
+
+

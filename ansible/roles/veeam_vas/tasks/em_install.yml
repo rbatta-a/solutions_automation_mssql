@@ -1,0 +1,83 @@
+---
+# em_install tasks file for veeamhub.veeam_vas
+- name: Checking OS for pending reboots
+  pending_reboot_check:
+  register: precheck
+- name: Is there an existing pending reboot?
+  ansible.builtin.fail:
+    msg: "Windows server requires a reboot. After reboot, you can proceed with the Veeam Backup Enterprise Manager install."
+  when:
+    - precheck.pending_reboot | bool
+- name: Are unsupported SQL server settings specified in playbook?
+  ansible.builtin.fail:
+    msg: "Windows authentication is not supported for remote SQL server with LOCAL SYSTEM service account. Specify a different service account, or use native SQL authentication."
+  when:
+    - sql_authentication == "0"
+    - service_account_username == "LocalSystem"
+- name: Checking to see if Veeam Backup & Replication Server is installed
+  veeam_software_check:
+    name: "Veeam Backup & Replication Server"
+  register: software
+- name: Is Veeam Backup & Replication Server w/Cloud Connect installed?
+  ansible.builtin.fail:
+    msg: "Veeam Backup Enterprise Manager install on the same server as Cloud Connect is not supported by this role. Please proceed with a manual install."
+  when:
+    - software.installed | bool
+    - cloud_connect | bool
+- name: Including version-specific variables
+  ansible.builtin.include_vars:
+    file: "vars/em_v{{ version }}.yml"
+- name: EM ISO Tasks
+  ansible.builtin.include_tasks: mount_iso.yml
+
+# Determining which process (legacy or new) will be used
+- name: Looking for 'Veeam.Silent.Install.exe' in Veeam ISO
+  ansible.windows.win_find:
+    paths: "{{ source }}Setup"
+    patterns: Veeam.Silent.Install.exe
+    recurse: true
+    file_type: file
+    use_regex: false
+  register: file
+- name: Determine version of 'Veeam.Silent.Install.exe'
+  community.windows.win_file_version:
+    path: "{{ file.files[0].path }}"
+  register: file_version
+  when: file.matched | bool
+- name: Legacy install process will be used
+  ansible.builtin.set_fact:
+    legacy: true
+  when: not file.matched | bool or file_version.win_file_version.file_version == '1.0.0.0'
+
+# Print Installation Configuration
+- name: Print Installation Configuration
+  ansible.builtin.debug:
+    msg:
+      - "Legacy Install Process: {{ legacy }}"
+      - "ISO Drive Letter: '{{ source }}'"
+      - "Installation Logs Folder: '{{ destination }}logs'"
+      - "Version: {{ version }}"
+      - "Download ISO?: {{ iso_download }}"
+      - "ISO Source: {{ iso_url }}"
+      - "ISO File Destination: {{ destination }}{{ destination_iso_file }}"
+      - "Use license?: {{ license }}"
+      - "License Source: {{ source_license }}"
+      - "License File Destination: {{ destination }}{{ destination_license_file }}"
+      - "Install SQL Express/PostgreSQL?: {{ sql_express_setup }}"
+      - "SQL Instance: {{ sql_instance }}"
+      - "SQL Database: {{ sql_database }}"
+      - "SQL Service Account: {{ sql_service_username | default('not specified') }}"
+      - "SQL Install Account: {{ sql_install_username | default('not specified') }}"
+      - "EM SQL Account: {{ sql_username | default('not specified') }}"
+
+# Versions prior to 12.1 use the legacy process
+- name: Including Legacy Install tasks
+  ansible.builtin.include_tasks: legacy_em_install.yml
+  when:
+    - legacy | bool
+
+# Versions 12.1 and later use the new process
+- name: Including New Install tasks
+  ansible.builtin.include_tasks: new_em_install.yml
+  when:
+    - not legacy | bool

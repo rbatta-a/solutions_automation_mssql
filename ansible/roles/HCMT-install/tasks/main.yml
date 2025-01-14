@@ -1,0 +1,109 @@
+    - name: Create a xfs filesystem on /dev/sdb for data
+      filesystem:
+        fstype: xfs
+        dev: /dev/sdb
+
+    - name: Create a xfs filesystem on /dev/sdc for log
+      filesystem:
+        fstype: xfs
+        dev: /dev/sdc
+
+    - name: Create Directories
+      ansible.builtin.file:
+        path:
+          - /hana/data
+          - /hana/log
+          - /hana/shared
+        state: directory
+
+    - name: Mount device
+      mount:
+        src: /dev/sdb
+        path: /hana/data
+        fstype: xfs
+        opts: defaults
+        state: mounted
+
+    - name: Mount device
+      mount:
+        src: /dev/sdc
+        path: /hana/log
+        fstype: xfs
+        opts: defaults
+        state: mounted
+
+
+    - name: Mount NFS share
+      mount:
+        src: "{{ nfs_share }}"
+        path: /hana/shared
+        fstype: nfs
+        opts: rw
+        state: mounted
+
+    - name: Get UUID sdb
+      command: blkid -s UUID -o value /dev/sdb
+      register: sdb_output
+
+    - name: Get UUID sdc
+      command: blkid -s UUID -o value /dev/sdc
+      register: sdc_output
+
+    - name: fstab entry device by UUID
+      lineinfile:
+        path: /etc/fstab
+        line: "UUID={{ sdb_output.stdout }} /hana/data xfs noatime 0 0"
+        state: present
+
+    - name: fstab entry  device by UUID
+      lineinfile:
+        path: /etc/fstab
+        line: "UUID={{ sdc_output.stdout }} /hana/log xfs noatime 0 0"
+        state: present
+
+    - name: fstab entry for NFS
+      lineinfile:
+        path: /etc/fstab
+        line: "10.21.220.76:/saphana /hana/shared nfs noatime 0 2"
+        state: present
+
+    - name: Disable firewall
+      command: systemctl stop firewalld
+      command: systemctl disable firewalld
+
+    - name: Apply Solution HANA
+      command: saptune solution apply HANA
+
+    - name: saptune service start
+      command: saptune service takeover
+      delay: 10
+
+    - name: Tuning the System using saptune
+      command: saptune service enablestart
+
+    - name: Using SAPCAR
+      command: mv /opt/hcmt/SAPCAR_1115-70006178.EXE /opt/hcmt/SAPCAR
+
+    - name: Making SAPCAR executbale
+      command: chmod +x /opt/hcmt/SAPCAR
+
+    - name: Extracting  HCMT 067 version using SAPCAR
+      command: /opt/hcmt/SAPCAR -xvf /opt/hcmt/hcmt_067/HCMT_067_0-80003261.SAR -R /opt/hcmt/hcmt_067/
+
+    - name: Extracting HCMT 051 version using SAPCAR
+      command: /opt/hcmt/SAPCAR -xvf /opt/hcmt/hcmt_051/HCMT_051_0-80003261.SAR  -R /opt/hcmt/hcmt_051/
+
+    - name: Installing HCMT 067 version
+      command: /opt/hcmt/hcmt_067/setup/hcmtsetup
+
+    - name: Installing HCMT 051 version
+      command: /opt/hcmt/hcmt_051/setup/hcmtsetup
+
+    - name: Copy FlashArray execution and consistency test to HCMT config
+      command: mv /opt/hcmt/executionplanFA.json /opt/hcmt/hcmt_067/setup/config/
+      command: mv /opt/hcmt/consistency_test.json /opt/hcmt/hcmt_067/setup/config/
+      command: mv /opt/hcmt/executionplanFA.json /opt/hcmt/hcmt_067/setup/config/
+      command: mv /opt/hcmt/consistency_test.json /opt/hcmt/hcmt_067/setup/config/
+
+    - name: Start HCMT in server mode
+      shell: /opt/hcmt/hcmt_051/setup/hcmt -S -v &

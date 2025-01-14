@@ -1,0 +1,79 @@
+---
+# em_upgrade tasks file for veeamhub.veeam_vas
+- name: Checking OS for pending reboots
+  pending_reboot_check:
+  register: precheck
+- name: Is there an existing pending reboot?
+  ansible.builtin.fail:
+    msg: "This Windows server requires a reboot prior to beginning the Veeam Backup Enterprise Manager install. After rebooting this server, you can proceed with the installation."
+  when:
+    - precheck.pending_reboot | bool
+- name: Checking to see if Veeam Backup Enterprise Manager is installed
+  veeam_software_check:
+    name: "Veeam Backup Enterprise Manager"
+  register: software
+- name: Is Veeam Backup Enterprise Manager installed?
+  ansible.builtin.fail:
+    msg: "Veeam Backup Enterprise Manager must be installed on this server in order to upgrade it."
+  when: not (software.installed | bool)
+- name: Checking to see if Veeam Backup & Replication Server is installed
+  veeam_software_check:
+    name: "Veeam Backup & Replication Server"
+  register: software
+- name: Is Veeam Backup & Replication Server w/Cloud Connect installed?
+  ansible.builtin.fail:
+    msg: "Veeam Backup Enterprise Manager install on the same server as Cloud Connect is not supported by this role. Please proceed with a manual install."
+  when:
+    - software.installed | bool
+    - cloud_connect | bool
+- name: Including version-specific variables
+  ansible.builtin.include_vars:
+    file: "vars/em_v{{ version }}.yml"
+- name: EM ISO Tasks
+  ansible.builtin.include_tasks: mount_iso.yml
+
+# Determining which process (legacy or new) will be used
+- name: Looking for 'Veeam.Silent.Install.exe' in Veeam ISO
+  ansible.windows.win_find:
+    paths: "{{ source }}Setup"
+    patterns: Veeam.Silent.Install.exe
+    recurse: true
+    file_type: file
+    use_regex: false
+  register: file
+- name: Determine version of 'Veeam.Silent.Install.exe'
+  community.windows.win_file_version:
+    path: "{{ file.files[0].path }}"
+  register: file_version
+  when: file.matched | bool
+- name: Legacy install process will be used
+  ansible.builtin.set_fact:
+    legacy: true
+  when: not file.matched | bool or file_version.win_file_version.file_version == '1.0.0.0'
+
+# Print Upgrade Configuration
+- name: Print Upgrade Configuration
+  ansible.builtin.debug:
+    msg:
+      - "Legacy Install Process: {{ legacy }}"
+      - "ISO Drive Letter: '{{ source }}'"
+      - "Upgrade Logs Folder: '{{ destination }}logs'"
+      - "Version: {{ version }}"
+      - "Download ISO?: {{ iso_download }}"
+      - "ISO Source: {{ iso_url }}"
+      - "ISO File Destination: {{ destination }}{{ destination_iso_file }}"
+      - "Use license?: {{ license }}"
+      - "License Source: {{ source_license }}"
+      - "License File Destination: {{ destination }}{{ destination_license_file }}"
+
+# Versions prior to 12.1 use the legacy process
+- name: Including Legacy Upgrade tasks
+  ansible.builtin.include_tasks: legacy_em_upgrade.yml
+  when:
+    - legacy | bool
+
+# Versions 12.1 and later use the new process
+- name: Including New Upgrade tasks
+  ansible.builtin.include_tasks: new_em_upgrade.yml
+  when:
+    - not legacy | bool

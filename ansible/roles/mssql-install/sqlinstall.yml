@@ -1,0 +1,6 @@
+- name: SQL Server
+  hosts: win-test-1.soln.local
+  tags: mssql
+
+  roles:
+  - { role: mssql }

@@ -1,0 +1,31 @@
+- name: Download the exporter installer
+  win_get_url:
+    url: http://7-zip.org/a/7z1604-x64.msi
+    dest: C:\ansible_examples\7z1604-x64.msi
+
+- name: Install MSI
+  win_package:
+    path: C:\ansible_examples\7z1604-x64.msi
+    state: present
+
+- name: Install PSCX
+  win_psmodule:
+    name: Pscx
+    state: present
+
+- name: Download the exporter installer
+  win_get_url:
+    url: https://github.com/free/sql_exporter/releases/download/{{ sql_exporter_version }}/sql_exporter-{{ sql_exporter_version }}.windows-amd64.tar.gz
+    dest: C:\ansible_examples\sql_exporter-{{ sql_exporter_version }}.windows-amd64.tar.gz
+
+
+
+- name: Unzip gz
+  win_unzip:
+    src: C:\ansible_examples\sql_exporter-{{ sql_exporter_version }}.windows-amd64.tar.gz
+    dest: C:\ansible_examples\
+
+- name: Unzip
+  win_unzip:
+    src: C:\ansible_examples\sql_exporter-{{ sql_exporter_version }}.windows-amd64.tar
+    dest: C:\ansible_examples\

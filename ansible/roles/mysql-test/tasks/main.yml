@@ -1,0 +1,51 @@
+
+- name: Create a new database
+  community.mysql.mysql_db:
+    name: testing
+    state: present
+    login_password: "{{ sqlpass }}"
+    #login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Create user with password and grant priv
+  community.mysql.mysql_user:
+    state: present
+    name: dbtest
+    password: "{{ sqlpass }}"
+    login_password: "{{ sqlpass }}"
+    priv:
+      'testing.*': 'ALL,GRANT'
+
+- name: Download rpm
+  shell: curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | sudo bash ; yum -y install sysbench
+
+- name: clone repo
+  git:
+    repo: https://github.com/Percona-Lab/sysbench-tpcc.git
+    dest: /usr/share/sysbench/percona
+
+- name: copy files
+  shell: cp /usr/share/sysbench/percona/* /usr/share/sysbench/.
+
+- name: cleanup
+  shell: sysbench /usr/share/sysbench/tpcc.lua --threads=1 --tables=1 --scale=1 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} cleanup
+
+- name: prepare
+  shell: sysbench /usr/share/sysbench/tpcc.lua --threads=1 --tables=1 --scale=1 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} prepare
+  async: 1000
+  poll: 5
+
+- name: run
+  shell: sysbench /usr/share/sysbench/tpcc.lua --threads=1 --tables=1 --scale=1 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} run > /tmp/mysql_test-$(date +"%Y_%m_%d_%I_%M_%p").log
+  async: 1000
+  poll: 5
+
+- name: get the test results
+  shell: cat `ls -lrt /tmp/mysql_test*|tail -1|awk '{print $9}'`
+  register: mysql_test_result
+
+- name: print the results
+  debug:
+    var: mysql_test_result
+
+# - name: cleanup
+#   shell: sysbench /usr/share/sysbench/tpcc.lua --threads=48 --tables=2 --scale=20 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} cleanup

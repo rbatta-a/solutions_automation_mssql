@@ -1,0 +1,194 @@
+- name: format the additional disk
+  filesystem:
+    fstype: ext4
+    dev: /dev/sdb
+
+- name: create directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+  - /packages
+  - /var/lib/mysql
+  - /mysqlbackup
+  - /mysqlbackup_fae
+
+- name: mount FS
+  mount:
+    path: /packages
+    src: 10.21.126.232:/packages
+    fstype: nfs
+    state: mounted
+
+# - name: mount FS mysqlbackup
+#   mount:
+#     path: /mysqlbackup
+#     src: 10.21.220.225:/mysqlbackup
+#     fstype: nfs
+#     state: mounted
+
+# - name: mount FS mysqlbackup_fae
+#   mount:
+#     path: /mysqlbackup_fae
+#     src: 10.21.126.36:/mysqlbackup
+#     fstype: nfs
+#     state: mounted
+
+- name: Mount migration volume
+  mount:
+    path: "/var/lib/mysql"
+    fstype: ext4
+    src: /dev/sdb
+    state: mounted
+
+- name: Disable Selinux
+  selinux:
+   state: disabled
+
+
+- name: stop and disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: install mysql
+  package:
+    name: "{{ item }}"
+    state: latest
+    disable_gpg_check: yes
+  with_items:
+    - mysql-server
+    - mysql
+ #   - python-mysql
+    - mysql-devel
+    - git
+
+    
+
+
+
+- name: start mysql service
+  systemd:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - mysqld
+    - sysstat-collect
+
+
+- name: install percona and does packages
+  package:
+    name: "{{ item }}"
+    state: latest
+    disable_gpg_check: yes
+  with_items:
+    - https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/libopenssl1_0_0-1.0.2p-3.49.1.x86_64.rpm
+    - /packages/purestorage_does-3.3.4-1.x86_64.rpm
+    - /packages/mysql_packages/mysql-commercial-backup-8.0.26-1.1.el8.x86_64.rpm
+    - https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    - percona-xtrabackup-80.x86_64
+    - qpress
+
+
+- name: enable-percona
+  shell: percona-release enable-only tools release
+
+
+# - name: Install pexpect & mysqlclient
+#   pip:
+#     name: "{{ item }}"
+#   with_items:
+#     - gcc
+#     - pexpect
+#     - mysqlclient
+
+# - name: mysql secure
+#   become: yes
+#   #vars:
+#   #  ansible_python_interpreter: /usr/bin/python3.9
+#   expect:
+#     command: mysql_secure_installation
+#     responses:
+#       #'Enter password for user root': "{{ mysqlpass }}"
+#       'Would you like to setup VALIDATE PASSWORD component': 'n'
+#       'Change the password for root': 'y'
+#       'Enter current password for root': ''
+#       'Set root password': 'y'
+#       'New password': "{{ sqlpass }}"
+#       'Re-enter new password': "{{ sqlpass }}"
+#       'Remove anonymous users': 'y'
+#       'Disallow root login remotely': 'n'
+#       'Remove test database': 'y'
+#       'Reload privilege tables now': 'y'
+#     timeout: 1
+#   register: sec_mysql
+
+# - name: Create a new database
+#   community.mysql.mysql_db:
+#     name: perfdb
+#     state: present
+#     login_password: "{{ sqlpass }}"
+#     #login_unix_socket: /run/mysqld/mysqld.sock
+
+# - name: Create user with password and grant priv
+#   community.mysql.mysql_user:
+#     state: present
+#     name: does
+#     password: "{{ sqlpass }}"
+#     login_password: "{{ sqlpass }}"
+#     priv:
+#       '*.*': 'ALL,GRANT'
+
+
+- name: create DB
+  shell: mysql -uroot -e "create database perfdb";
+
+
+- name: create user
+  shell: mysql -uroot -e "create user 'does'@'%' identified by 'Osmium76'";
+
+- name: password
+  shell: mysql -uroot -e "grant all on *.* to 'does'@'%'";
+
+
+
+
+# - name: run DOES data ingestion
+#   shell: /opt/purestorage/does/DOES.Cli --engine data --function add --databasetype MySQL --databasename perfdb --username does --password Osmium76 --amount 1 --unit Terabytes --numberofthreads 12 --hostname {{ ansible_default_ipv4.address }} --folder /packages/datafiles/data
+
+# - name: Download rpm
+#   shell: curl -s https://packagecloud.io/install/repositories/akopytov/sysbench/script.rpm.sh | sudo bash ; yum -y install sysbench
+
+# - name: clone repo
+#   git:
+#     repo: https://github.com/Percona-Lab/sysbench-tpcc.git
+#     dest: /usr/share/sysbench/percona
+
+# - name: copy files
+#   shell: cp /usr/share/sysbench/percona/* /usr/share/sysbench/.
+
+# - name: cleanup
+#   shell: sysbench /usr/share/sysbench/tpcc.lua --threads=1 --tables=1 --scale=1 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} cleanup
+
+# - name: prepare
+#   shell: sysbench /usr/share/sysbench/tpcc.lua --threads=1 --tables=1 --scale=1 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} prepare
+#   async: 1000
+#   poll: 5
+
+# - name: run
+#   shell: sysbench /usr/share/sysbench/tpcc.lua --threads=1 --tables=1 --scale=1 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} run > /tmp/mysql_test-$(date +"%Y_%m_%d_%I_%M_%p").log
+#   async: 1000
+#   poll: 5
+
+# - name: get the test results
+#   shell: cat `ls -lrt /tmp/mysql_test*|tail -1|awk '{print $9}'`
+#   register: mysql_test_result
+
+# - name: print the results
+#   debug:
+#     var: mysql_test_result
+
+# - name: cleanup
+#   shell: sysbench /usr/share/sysbench/tpcc.lua --threads=48 --tables=2 --scale=20 --db-driver=mysql --mysql-db=testing --mysql-user=dbtest --mysql-password={{ sqlpass }} cleanup

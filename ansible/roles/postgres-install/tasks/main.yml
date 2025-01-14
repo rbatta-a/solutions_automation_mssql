@@ -1,0 +1,172 @@
+- name: "Optional Python packages"
+  dnf: "name={{ item }}  state=present"
+  with_items:
+   - python3-psycopg2
+
+- name: Create disk partition on /dev/sdb for data
+  parted:
+    device: /dev/sdb
+    number: 1
+    state: present
+    fs_type: xfs
+          
+- name: Create a xfs filesystem on /dev/sdb1 for data
+  filesystem:
+    fstype: xfs
+    dev: /dev/sdb1
+
+- name: create mount directory
+  file:
+    path: '/var/lib/'
+    state: directory
+    mode: '0755'
+  with_items:
+   - pgsql
+
+- name: Mount new partition
+  mount:
+    path: '/var/lib/pgsql'
+    src: '/dev/sdb1'
+    fstype: xfs
+    state: mounted
+   
+- name: Install the PGSQL 
+  ansible.builtin.dnf:
+    name: 'https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
+           #name: 'https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_facts[‘ansible_distribution_major_version’] }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
+    state: present
+    disable_gpg_check: true 
+
+- name: Disable the built-in PostgreSQL module
+  command: dnf -qy module disable postgresql
+  ignore_errors: true
+
+- name: Install the PGSQL server package.
+  ansible.builtin.dnf:
+    name: postgresql14-server
+    state: present
+          
+          #- name: "postgres packages Installation"
+          #command: dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+          #- name: Install PostgreSQL
+          #command: dnf install -y postgresql14-server
+          
+          
+# - name: Optionally initialize the database and enable automatic start
+#   command: /usr/pgsql-14/bin/postgresql-14-setup initdb
+
+
+        #- name: "Initializing PostgreSQL"
+        #command: /usr/pgsql-14/bin/postgresql-14-setup initdb
+ 
+- name: uncomment listen_addresses
+  replace:
+    path: /var/lib/pgsql/14/data/postgresql.conf
+    regexp: ‘#listen_addresses'
+    replace: listen_addresses
+          
+- name: uncomment port 5432
+  replace:
+    path: /var/lib/pgsql/14/data/postgresql.conf
+    regexp: ‘#port’
+    replace: port
+
+
+- name: Replace a localhost entry searching for a literal string to avoid escaping
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/14/data/pg_hba.conf 
+    line: host    all             all             0.0.0.0/0               md5
+    create: yes
+
+- name: "Start and enable services"
+  service: "name={{ item }} state=started enabled=yes"
+  with_items:
+   - postgresql-14
+
+- name: Set password for postgres user
+  postgresql_user:
+    db: postgres
+    user: postgres
+    password: "{{ postgrespass }}"
+  become_user: postgres          
+
+- name: Change password for postgres user
+  user:
+    name: postgres
+    password: "{{ postgrespass | password_hash('sha512') }}"
+
+- name: "App database Creation"
+  postgresql_db:
+    state: present
+    name: "{{ postgres_db_name }}"
+  become: yes
+  become_user: postgres
+
+- name: "database user creation"
+  postgresql_user:
+    state: present
+    name: "{{ postgresdb_user }}"
+    password: "{{ postgrespass }}"
+  become: yes
+  become_user: postgres
+
+- name: "database  user access to app db"
+  postgresql_privs:
+    type: database
+    database: "{{ postgres_db_name }}"
+    roles: "{{ postgresdb_user }}"
+    grant_option: yes
+    privs: all
+  become: yes
+  become_user: postgres
+
+- name: check permission
+  ansible.builtin.file:
+    path: /var/lib/pgsql
+    owner: "postgres"
+    group: "postgres"
+    mode: '0700'
+  
+
+- name: Install library
+  command: rpm -ivh https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/libopenssl1_0_0-1.0.2p-3.49.1.x86_64.rpm
+       
+- name: Install DOES tool
+  command: rpm -ivh http://prod-repo.puretec.purestorage.com/tools/DOES/purestorage_does-3.3.0-1.x86_64.rpm
+
+- name: Copying DOES rpm and ingest files from Source server to Postgres
+  command: mkdir /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0001.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0002.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0003.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0004.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0005.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0006.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0007.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0008.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0009.gz -P /tmp/ingest
+
+- name:
+  command: wget http://prod-repo.puretec.purestorage.com/tools/DOES/DataEngineFiles/Engine.Oil-0010.gz -P /tmp/ingest
+
+- name: Data Ingestion
+  command: /opt/purestorage/does/DOES.Cli --engine data --function add --hostname localhost --databasetype PostgreSQL --databasename testapp --username postgres --password postgres --amount 1 --unit Gigabytes --numberofthreads 8 --folder /tmp/ingest/

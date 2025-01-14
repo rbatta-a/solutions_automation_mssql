@@ -1,0 +1,62 @@
+yumrepo_server:         "10.21.152.167"
+ntp_server: ""
+node_exporter_version: "1.5.0"
+mysql_exporter_version: "0.15.1"
+postgres_exporter_version: "0.12.0"
+win_node_exporter_version: "0.20.0"
+sql_exporter_version: "0.5"
+node_exporter_bin: /usr/local/bin/node_exporter
+mysql_exporter_bin: /usr/local/bin/mysqld_exporter
+postgres_exporter_bin: /usr/local/bin/
+exporter_user: prometheus
+exporter_group: "prometheus"
+node_exporter_dir_conf: /etc/node_exporter
+mysql_exporter_dir_conf: /etc/mysql_exporter
+postgres_exporter_dir_conf: /etc/postgres_exporter
+sqlpass: "Osmium76"
+postgrespass: ""
+postgres_db_name: postgresdbapp
+postgresdb_user: dbuser
+oracle_pdb: pdb1
+oracle_sid: cdb1
+oracle_home: /u01/app/oracle/product/19.0.0/dbhome_1
+oracle_base: /u01/app/oracle
+oracle_inventory: /u01/app/oraInventory
+stage_dir: /u01/stage
+oradbsoft_rsp: oracle-instal
+ips:
+  - 10.21.210.9
+  - 10.21.210.11
+nfs_share: 10.21.220.76:/saphana
+
+veeam:  
+  domain_name: "veeam.local" # Replace with your domain name
+  dns_domain_name: "veeam.local" # Replace with your DNS domain name
+  hostname: "host1" # Replace if you need a specific hostname
+  domain_admin_user: "veeam.local\\administrator" # Replace with your domain admin username
+  domain_admin_password: "Osmium76$" # Replace with your domain admin password 
+  ad_name: veeamfile
+  ad_username: Administrator
+  fs_name: veeam-auto-new-fs1
+  eradicate: true
+  fs_dir_name: veemm-auto-fs-dir1
+  fs_dir_path: veeam-auto-fs-dir-path1
+  nfs_policy_name: veeam-auto-nfs-policy1
+  nfs_no_rule_name: ansible-qa-nfs-norule-policy1
+  nfs_access: root-squash
+  nfs_access_no_root_squash: no-root-squash
+  nfs_permission: rw
+  nfs_client: ansible-qa-nfs-client1
+  nfs_all_client: "*"
+  smb_policy_name: veeam-auto-smb-policy1
+  smb_encrypt: true
+  smb_anon_allowed: false
+  smb_client: veeam-auto-smb-client1
+  fs_export_name: veeam-auto-fs-export1
+  fs_nfs_policy: veeam-auto-nfs-policy1
+  fs_smb_policy: veeam-auto-smb-policy1
+  fa_name: sn1-c60r3-h03-32
+  fa_file_vif_ip_address: 10.21.122.33
+  fa_url: 10.21.199.50
+  fa_api_token: a200799e-79d7-c979-a6fb-a3777a6c78b6
+

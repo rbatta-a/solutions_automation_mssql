@@ -1,0 +1,38 @@
+- name: install DOES
+  yum:
+    name: "{{ item }}"
+    state: present
+    disable_gpg_check: true
+  with_items: 
+  - https://rpmfind.net/linux/opensuse/distribution/leap/15.4/repo/oss/x86_64/libopenssl1_0_0-1.0.2p-3.49.1.x86_64.rpm
+  - http://prod-repo.puretec.purestorage.com/tools/DOES/Internal%20Build/purestorage_does-3.3.4-1.x86_64.rpm
+
+- name: Mount migration volume
+  mount:
+    path: /mnt
+    fstype: nfs
+    src: 10.21.236.80:/oracle_binary
+    state: mounted
+
+- name: "Ansible Create directory if not exists"
+  file:
+    path: /opt/purestorage
+    mode: 0775
+    group: oinstall
+    owner: oracle
+    recurse: true
+
+- name: "Ansible Create directory if not exists"
+  file:
+    path: /opt/purestorage
+    state: directory
+    mode: 0775
+    group: oinstall
+    owner: oracle
+
+# - name: run DOED tool
+#   commannd: /opt/purestorage/does/DOES.Cli --engine data --function add --databasetype Oracle --databasename orclpdb --randompercentage 30 --schematype WithIndexesLOB --tableamplification 30 --amount 2 --unit Gigabytes --username pdbadmin --password Oracle123 --hostname "{{ ansible_hostname }}" --folder /mnt/datafiles -v
+#   become_user: oracle
+#   register: does_output
+
+

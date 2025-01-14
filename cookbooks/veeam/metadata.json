@@ -1,0 +1,35 @@
+{
+  "name": "veeam",
+  "description": "Installs/Configures Veeam Backup and Recovery",
+  "long_description": "",
+  "maintainer": "Exosphere Data, LLC",
+  "maintainer_email": "chef@exospheredata.com",
+  "license": "Apache-2.0",
+  "platforms": {
+    "windows": ">= 0.0.0"
+  },
+  "dependencies": {
+    "windows": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "4.0.3",
+  "source_url": "https://github.com/exospheredata/veeam",
+  "issues_url": "https://github.com/exospheredata/veeam/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 13.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

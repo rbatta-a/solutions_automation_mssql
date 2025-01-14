@@ -1,0 +1,129 @@
+Additional disk
+
+OEL 7 for 19c
+
+
+yum install -y oracle-database-preinstall-19c
+passwd oracle
+
+SELINUX=permissive -- /etc/selinux/config
+
+setenforce Permissive
+systemctl stop firewalld
+systemctl disable firewalld
+
+mkdir -p /u01/app/oracle/product/19.0.0/dbhome_1
+mkdir -p /u02/oradata
+chown -R oracle:oinstall /u01 /u02
+chmod -R 775 /u01 /u02
+
+mkdir /home/oracle/scripts
+
+cat > /home/oracle/scripts/setEnv.sh <<EOF
+# Oracle Settings
+export TMP=/tmp
+export TMPDIR=\$TMP
+
+export ORACLE_HOSTNAME=ol7-19.localdomain
+export ORACLE_UNQNAME=cdb1
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=\$ORACLE_BASE/product/19.0.0/dbhome_1
+export ORA_INVENTORY=/u01/app/oraInventory
+export ORACLE_SID=cdb1
+export PDB_NAME=pdb1
+export DATA_DIR=/u02/oradata
+
+export PATH=/usr/sbin:/usr/local/bin:\$PATH
+export PATH=\$ORACLE_HOME/bin:\$PATH
+
+export LD_LIBRARY_PATH=\$ORACLE_HOME/lib:/lib:/usr/lib
+export CLASSPATH=\$ORACLE_HOME/jlib:\$ORACLE_HOME/rdbms/jlib
+export CV_ASSUME_DISTID=OEL7.8
+EOF
+
+echo ". /home/oracle/scripts/setEnv.sh" >> /home/oracle/.bash_profile
+
+
+cat > /home/oracle/scripts/start_all.sh <<EOF
+#!/bin/bash
+. /home/oracle/scripts/setEnv.sh
+
+export ORAENV_ASK=NO
+. oraenv
+export ORAENV_ASK=YES
+
+dbstart \$ORACLE_HOME
+EOF
+
+
+cat > /home/oracle/scripts/stop_all.sh <<EOF
+#!/bin/bash
+. /home/oracle/scripts/setEnv.sh
+
+export ORAENV_ASK=NO
+. oraenv
+export ORAENV_ASK=YES
+
+dbshut \$ORACLE_HOME
+EOF
+
+chown -R oracle:oinstall /home/oracle/scripts
+chmod u+x /home/oracle/scripts/*.sh
+
+
+su - oracle
+cd $ORACLE_HOME
+
+unzip -oq /tmp/LINUX.X64_193000_db_home.zip
+
+Sudo access for oracle
+
+# Silent mode.
+./runInstaller -ignorePrereq -waitforcompletion -silent \
+    -responseFile ${ORACLE_HOME}/install/response/db_install.rsp \
+    oracle.install.option=INSTALL_DB_SWONLY \
+    ORACLE_HOSTNAME=${ORACLE_HOSTNAME} \
+    UNIX_GROUP_NAME=oinstall \
+    INVENTORY_LOCATION=${ORA_INVENTORY} \
+    SELECTED_LANGUAGES=en,en_GB \
+    ORACLE_HOME=${ORACLE_HOME} \
+    ORACLE_BASE=${ORACLE_BASE} \
+    oracle.install.db.InstallEdition=EE \
+    oracle.install.db.OSDBA_GROUP=dba \
+    oracle.install.db.OSBACKUPDBA_GROUP=dba \
+    oracle.install.db.OSDGDBA_GROUP=dba \
+    oracle.install.db.OSKMDBA_GROUP=dba \
+    oracle.install.db.OSRACDBA_GROUP=dba \
+    SECURITY_UPDATES_VIA_MYORACLESUPPORT=false \
+    DECLINE_SECURITY_UPDATES=true
+
+
+sudo /u01/app/oraInventory/orainstRoot.sh
+
+sudo /u01/app/oracle/product/19.0.0/dbhome_1/root.sh
+
+
+DB creation
+
+# Start the listener.
+lsnrctl start
+
+# Silent mode.
+
+
+     dbca -silent -createDatabase \
+     -templateName General_Purpose.dbc \
+     -sysPassword SysPassword1 \
+     -systemPassword SysPassword1  \
+     -responseFile NO_VALUE \
+     -gdbname ${ORACLE_SID} \
+     -sid ${ORACLE_SID} -emConfiguration NONE \
+     -storageType FS \
+     -datafileDestination "${DATA_DIR}" \
+     -memoryMgmtType auto_sga \
+     -J-Doracle.assistants.dbca.validate.ConfigurationParams=false \
+     -memoryPercentage 40 
+     
+Edit the "/etc/oratab" file setting the restart flag for each instance to 'Y'.
+
+dbca -silent -createDatabase -templateName General_Purpose.dbc -sysPassword SysPassword1 -systemPassword SysPassword1  -responseFile NO_VALUE -gdbname {{ oracle_sid } -sid {{ oracle_sid }} -emConfiguration NONE -storageType FS -datafileDestination /u02/oradata -memoryMgmtType auto_sga -J-Doracle.assistants.dbca.validate.ConfigurationParams=false -memoryPercentage 40 

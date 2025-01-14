@@ -1,0 +1,6 @@
+- name: reload_sysstat_collect_timer
+  systemd:
+    name: sysstat-collect.timer
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

@@ -1,0 +1,15 @@
+---
+    # common playbook
+  - hosts:         all
+    user: ansible
+    become:        yes
+    become_method: sudo
+    gather_facts:  yes
+    vars_files:
+       - "../vars/common.yml"
+    roles:
+      - {role: oracle-test}
+
+
+
+      
